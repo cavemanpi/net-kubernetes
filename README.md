@@ -57,8 +57,8 @@ All parameters are optional and have some basic default values (where appropriat
 
 - ssl\_cert\_file, ssl\_key\_file, ssl\_ca\_file
 
-    This there options passed into new will cause Net::Kubernetes in inlcude SSL client certs to requests to the kuberernetes
-    API server for authentication.  There are basically just a passthrough to the underlying LWP::UserAgent used to handle the 
+    When these options are passed into new, Net::Kubernetes will inlcude SSL client certs in requests to the kuberernetes
+    API server for authentication.  They are basically just a passed through to the underlying LWP::UserAgent used to handle
     api requests.
 
 ## get\_namespace("myNamespace");
@@ -102,7 +102,7 @@ Dave Mueller &lt;dave@perljedi.com>
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2015 by Dave Mueller.
+This software is Copyright (c) 2015 by Liquid Web Inc.
 
 This is free software, licensed under:
 
