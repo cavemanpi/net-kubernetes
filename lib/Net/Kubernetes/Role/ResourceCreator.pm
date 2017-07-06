@@ -6,6 +6,7 @@ use MooseX::Aliases;
 require YAML::XS;
 require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::Pod;
+require Net::Kubernetes::Resource::Deployment;
 require Net::Kubernetes::Resource::ReplicationController;
 require Net::Kubernetes::Resource::Secret;
 require Net::Kubernetes::Exception;
@@ -18,6 +19,7 @@ with 'Net::Kubernetes::Role::ResourceFactory';
 requires 'ua';
 requires 'create_request';
 requires 'json';
+requires 'namespace';
 
 =method create({OBJECT})
 

@@ -11,6 +11,7 @@ require Net::Kubernetes::Resource::ReplicationController;
 require Net::Kubernetes::Resource::Secret;
 require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::ServiceAccount;
+require Net::Kubernetes::Resource::Deployment;
 
 sub create_resource_object {
 	my($self, $object, $kind) = @_;

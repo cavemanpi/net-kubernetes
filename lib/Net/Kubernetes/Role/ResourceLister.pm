@@ -85,6 +85,21 @@ sub list_endpoints {
 	return $self->_retrieve_list('Endpoint', @_);
 }
 
+=method list_deployments([label=>{label=>value}], [fields=>{field=>value}])
+
+returns a list of L<Net::Kubernetes::Resource::Deployment>s
+
+=cut
+
+sub list_deployments {
+	my $self = shift;
+	my %options = $self->_norm_options(@_);
+
+	# A temporary hack until I figure out the best way to handle
+	# kubernetes' API versioning scheme. ~ Kevin
+	$options{base_path} ||= $self->url . '/apis/extensions/v1beta1';
+	return $self->_retrieve_list('Deployment', %options);
+}
 
 sub _retrieve_list {
 	my $self = shift;
