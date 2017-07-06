@@ -116,10 +116,15 @@ sub get_namespace {
 	if (! defined $namespace || ! length $namespace) {
 		Throwable::Error->throw(message=>'$namespace cannot be null');
 	}
-	my $res = $self->ua->request($self->create_request(GET => $self->path.'/namespaces/'.$namespace));
+	my $namespace_path = $self->base_path . "/namespaces/$namespace";
+	my $res = $self->ua->request($self->create_request(GET => $self->url . $namespace_path));
 	if ($res->is_success) {
 		my $ns = $self->json->decode($res->content);
-		my(%create_args) = (url => $self->url, base_path=>$ns->{metadata}{selfLink}, api_version=>$self->api_version, namespace=> $namespace, _namespace_data=>$ns);
+		
+		# Somewhere between Kubernetes 1.2 and 1.5, the self link for namespaces broke. So for now, we can't trust them.
+		# to populate the base_path. A bug report indicates that this bug is fixed in 1.7.
+		# https://github.com/kubernetes/kubernetes/issues/48321
+		my(%create_args) = (url => $self->url, base_path=>$namespace_path, api_version=>$self->api_version, namespace=> $namespace, _namespace_data=>$ns);
 		$create_args{username} = $self->username if(defined $self->username);
 		$create_args{password} = $self->password if(defined $self->password);
 		$create_args{ssl_cert_file} = $self->ssl_cert_file if(defined $self->ssl_cert_file);
