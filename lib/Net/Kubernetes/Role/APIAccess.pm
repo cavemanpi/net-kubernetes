@@ -121,7 +121,8 @@ around BUILDARGS => sub {
 
 sub _create_default_base_path {
 	my($self) = @_;
-	return '/api/'.$self->api_version;
+	
+	return '/api/' . $self->api_version;
 }
 
 sub path {
