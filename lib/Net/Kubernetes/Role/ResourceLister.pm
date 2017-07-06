@@ -21,31 +21,7 @@ returns a list of L<Net::Kubernetes::Resource::Pod>s
 
 sub list_pods {
 	my $self = shift;
-	my(%options);
-	if (ref($_[0])) {
-		%options = %{ $_[0] };
-	}else{
-		%options = @_;
-	}
-
-	my $uri = URI->new($self->path.'/pods');
-	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
-	$uri->query_form(%form);
-
-	my $res = $self->ua->request($self->create_request(GET => $uri));
-	if ($res->is_success) {
-		my $pod_list = $self->json->decode($res->content);
-		my(@pods)=();
-		foreach my $pod (@{ $pod_list->{items}}){
-			$pod->{apiVersion} = $pod_list->{apiVersion};
-			push @pods, $self->create_resource_object($pod, 'Pod');
-		}
-		return wantarray ? @pods : \@pods;
-	}else{
-		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
-	}
+	return $self->_retrieve_list('Pod', @_);
 }
 
 =method list_rc([label=>{label=>value}], [fields=>{field=>value}])
@@ -60,31 +36,7 @@ returns a list of L<Net::Kubernetes::Resource::ReplicationController>s
 
 sub list_replication_controllers {
 	my $self = shift;
-	my(%options);
-	if (ref($_[0])) {
-		%options = %{ $_[0] };
-	}else{
-		%options = @_;
-	}
-
-	my $uri = URI->new($self->path.'/replicationcontrollers');
-	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
-	$uri->query_form(%form);
-
-	my $res = $self->ua->request($self->create_request(GET => $uri));
-	if ($res->is_success) {
-		my $pod_list = $self->json->decode($res->content);
-		my(@rcs)=();
-		foreach my $rc (@{ $pod_list->{items}}){
-			$rc->{apiVersion} = $pod_list->{apiVersion};
-			push @rcs, $self->create_resource_object($rc, 'ReplicationController');;
-		}
-		return wantarray ? @rcs : \@rcs;
-	}else{
-		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
-	}
+	return $self->_retrieve_list('ReplicationController', @_);
 }
 
 alias list_rc => 'list_replication_controllers';
@@ -97,31 +49,7 @@ returns a list of L<Net::Kubernetes::Resource::Service>s
 
 sub list_services {
 	my $self = shift;
-	my(%options);
-	if (ref($_[0])) {
-		%options = %{ $_[0] };
-	}else{
-		%options = @_;
-	}
-
-	my $uri = URI->new($self->path.'/services');
-	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
-	$uri->query_form(%form);
-
-	my $res = $self->ua->request($self->create_request(GET => $uri));
-	if ($res->is_success) {
-		my $pod_list = $self->json->decode($res->content);
-		my(@services)=();
-		foreach my $service (@{ $pod_list->{items}}){
-			$service->{apiVersion} = $pod_list->{apiVersion};
-			push @services, $self->create_resource_object($service, 'Service');
-		}
-		return wantarray ? @services : \@services;
-	}else{
-		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
-	}
+	return $self->_retrieve_list('Service', @_);
 }
 
 =method list_events([label=>{label=>value}], [fields=>{field=>value}])
@@ -132,31 +60,7 @@ returns a list of L<Net::Kubernetes::Resource::Event>s
 
 sub list_events {
 	my $self = shift;
-	my(%options);
-	if (ref($_[0])) {
-		%options = %{ $_[0] };
-	}else{
-		%options = @_;
-	}
-
-	my $uri = URI->new($self->path.'/events');
-	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
-	$uri->query_form(%form);
-
-	my $res = $self->ua->request($self->create_request(GET => $uri));
-	if ($res->is_success) {
-		my $event_list = $self->json->decode($res->content);
-		my(@events)=();
-		foreach my $service (@{ $event_list->{items}}){
-			$service->{apiVersion} = $event_list->{apiVersion};
-			push @events, $self->create_resource_object($service, 'Event');
-		}
-		return wantarray ? @events : \@events;
-	}else{
-		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
-	}
+	return $self->_retrieve_list('Event', @_);
 }
 
 =method list_secrets([label=>{label=>value}], [fields=>{field=>value}])
@@ -167,31 +71,7 @@ returns a list of L<Net::Kubernetes::Resource::Secret>s
 
 sub list_secrets {
 	my $self = shift;
-	my(%options);
-	if (ref($_[0])) {
-		%options = %{ $_[0] };
-	}else{
-		%options = @_;
-	}
-
-	my $uri = URI->new($self->path.'/secrets');
-	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
-	$uri->query_form(%form);
-
-	my $res = $self->ua->request($self->create_request(GET => $uri));
-	if ($res->is_success) {
-		my $pod_list = $self->json->decode($res->content);
-		my(@secrets)=();
-		foreach my $secret (@{ $pod_list->{items}}){
-			$secret->{apiVersion} = $pod_list->{apiVersion};
-			push @secrets, $self->create_resource_object($secret, 'Secret');
-		}
-		return wantarray ? @secrets : \@secrets;
-	}else{
-		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
-	}
+	return $self->_retrieve_list('Secret', @_);
 }
 
 =method list_endpoints([label=>{label=>value}], [fields=>{field=>value}])
@@ -202,14 +82,17 @@ returns a list of L<Net::Kubernetes::Resource::Endpoint>s
 
 sub list_endpoints {
 	my $self = shift;
-	my(%options);
-	if (ref($_[0])) {
-		%options = %{ $_[0] };
-	}else{
-		%options = @_;
-	}
+	return $self->_retrieve_list('Endpoint', @_);
+}
 
-	my $uri = URI->new($self->path.'/endpoints');
+
+sub _retrieve_list {
+	my $self = shift;
+	my $resource_kind = shift;
+	my %options = $self->_norm_options(@_);
+
+	my $path = $options{base_path} || $self->path;
+	my $uri = URI->new("$path/" . lc($resource_kind) . 's');
 	my(%form) = ();
 	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
 	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
@@ -217,13 +100,15 @@ sub list_endpoints {
 
 	my $res = $self->ua->request($self->create_request(GET => $uri));
 	if ($res->is_success) {
-		my $point_list = $self->json->decode($res->content);
-		my(@points)=();
-		foreach my $point (@{ $point_list->{items} }){
-			$point->{apiVersion} = $point_list->{apiVersion};
-			push @points, $self->create_resource_object($point, 'Endpoint');
+		my $resource_list = $self->json->decode($res->content);
+
+		my @resources;
+		foreach my $resource (@{ $resource_list->{items}}){
+			$resource->{apiVersion} = $resource_list->{apiVersion};
+			push @resources, $self->create_resource_object($resource, $resource_kind);
 		}
-		return wantarray ? @points : \@points;
+
+		return wantarray ? @resources : \@resources;
 	}else{
 		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
 	}
@@ -236,6 +121,19 @@ sub _build_selector_from_hash {
 		push @selectors, $label.'='.$select_hash->{$label};
 	}
 	return \@selectors;
+}
+
+sub _norm_options {
+	my $self = shift;
+	my %options;
+
+	if (ref($_[0])) {
+		%options = %{ $_[0] };
+	}else{
+		%options = @_;
+	}
+
+	return %options;
 }
 
 return 42;
