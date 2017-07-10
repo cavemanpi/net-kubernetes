@@ -4,6 +4,8 @@ package Net::Kubernetes::Resource::Role::HasPods;
 use Moose::Role;
 
 with 'Net::Kubernetes::Role::APIAccess';
+with 'Net::Kubernetes::Role::ResourceCatalog';
+
 requires 'namespace';
 
 =method get_pods
@@ -14,7 +16,7 @@ retreive a list of pods associated with with respource (either ReplicationContro
 
 sub get_pods {
 	my($self) = @_;
-	my $uri = URI->new_abs("../pods", $self->path);
+	my $uri = URI->new($self->resource_path('Pod'));
 	$uri->query_form(labelSelector=>$self->_build_selector_from_hash($self->spec->{selector}));
 	my $res = $self->ua->request($self->create_request(GET => $uri));
 	if ($res->is_success) {

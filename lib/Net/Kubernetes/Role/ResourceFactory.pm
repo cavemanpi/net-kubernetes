@@ -13,6 +13,8 @@ require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::ServiceAccount;
 require Net::Kubernetes::Resource::Deployment;
 
+with 'Net::Kubernetes::Role::ResourceCatalog';
+
 sub create_resource_object {
 	my($self, $object, $kind) = @_;
 	$kind ||= $object->{kind};

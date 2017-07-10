@@ -82,11 +82,11 @@ shared_examples_for "Pod Container" => sub {
 		isa_ok($call->[1], 'HTTP::Request');
 		is($call->[1]->method, 'GET');
 	};
-	it "Requests relative to its 'selfLink'" => sub {
+	it "Requests path based upon the catalog listing for pods" => sub {
 		$sut->get_pods();
 		my($call) = $lwpMock->verify('request')->once->getCalls->[0];
 		isa_ok($call->[1], 'HTTP::Request');
-		like($call->[1]->uri, qr{/api/v1beta3/namespaces/default/pods});
+		like($call->[1]->uri, qr{/api/v1/namespaces/default/pods});
 	};
 };
 

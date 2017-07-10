@@ -9,6 +9,7 @@ require Net::Kubernetes::Resource::ReplicationController;
 
 with 'Net::Kubernetes::Role::Lister';
 with 'Net::Kubernetes::Role::ResourceFactory';
+with 'Net::Kubernetes::Role::ResourceCatalog';
 
 requires 'ua';
 requires 'create_request';
@@ -96,9 +97,6 @@ sub list_deployments {
 	my $self = shift;
 	my %options = $self->_norm_options(@_);
 
-	# A temporary hack until I figure out the best way to handle
-	# kubernetes' API versioning scheme. ~ Kevin
-	$options{base_path} ||= $self->url . '/apis/extensions/v1beta1';
 	return $self->_retrieve_list('Deployment', %options);
 }
 
@@ -107,8 +105,7 @@ sub _retrieve_list {
 	my $resource_kind = shift;
 	my %options = $self->_norm_options(@_);
 
-	my $path = $options{base_path} || $self->path;
-	my $uri = URI->new("$path/" . lc($resource_kind) . 's');
+	my $uri = URI->new($self->resource_path($resource_kind));
 	my(%form) = ();
 	$form{labelSelector}=$self->build_selector_from_hash($options{labels}) if (exists $options{labels});
 	$form{fieldSelector}=$self->build_selector_from_hash($options{fields}) if (exists $options{fields});
