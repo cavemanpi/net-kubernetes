@@ -20,6 +20,11 @@ sub create_resource_object {
 	my(%create_args) = %$object;
 	$create_args{api_version} = $object->{apiVersion};
 	$create_args{server_version} = $self->server_version;
+	
+	unless ($self->global_resource($kind)) {
+		$create_args{namespace} = $object->{namespace} || $self->namespace;
+	}
+
 	$create_args{username} = $self->username if($self->username);
 	$create_args{password} = $self->password if($self->password);
 	$create_args{url} = $self->url;

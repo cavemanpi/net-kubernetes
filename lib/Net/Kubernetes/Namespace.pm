@@ -8,7 +8,7 @@ use syntax 'try';
 has namespace => (
 	is       => 'ro',
 	isa      => 'Str',
-	required => 0,
+	required => 1,
 );
 
 has _namespace_data => (

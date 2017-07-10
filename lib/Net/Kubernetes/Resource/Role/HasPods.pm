@@ -4,6 +4,7 @@ package Net::Kubernetes::Resource::Role::HasPods;
 use Moose::Role;
 
 with 'Net::Kubernetes::Role::APIAccess';
+requires 'namespace';
 
 =method get_pods
 
@@ -23,6 +24,7 @@ sub get_pods {
 			$pod->{apiVersion} = $pod_list->{apiVersion};
 			my(%create_args) = %$pod;
 			$create_args{api_version} = $pod->{apiVersion};
+			$create_args{namespace} = $self->namespace;
 			$create_args{username} = $self->username if($self->username);
 			$create_args{password} = $self->password if($self->password);
 			$create_args{url} = $self->url;

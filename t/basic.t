@@ -6,6 +6,7 @@ use HTTP::Response;
 use Test::Deep;
 use Test::Fatal qw(lives_ok dies_ok);
 use Net::Kubernetes;
+use Net::Kubernetes::Namespace;
 use Test::Mock::Wrapper 0.18;
 use vars qw($lwpMock $sut %config);
 

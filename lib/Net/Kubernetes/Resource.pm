@@ -25,6 +25,12 @@ has metadata => (
 	required => 1
 );
 
+has namespace => (
+	is       => 'ro',
+	isa      => 'Str',
+	required => 0,
+);
+
 =method $resource->delete
 
 Delete this rsource.
