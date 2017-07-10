@@ -22,11 +22,18 @@ describe "Net::Kubernetes" => sub {
 		isa_ok($sut, 'Net::Kubernetes');
 	};
 
-	it_should_behave_like "Pod Lister";
-	it_should_behave_like "Endpoint Lister";
-	it_should_behave_like "Replication Controller Lister";
-	it_should_behave_like "Service Lister";
-	it_should_behave_like "Secret Lister";
+	describe "resource list method" => sub {
+
+		it "is delegated to the namespace object" => sub {
+			$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"status":"ok", "apiVersion":"v1beta3", "metadata":{"selfLink":"/path/to/me"}}'));
+
+			foreach my $list_method (qw(list_rc list_pods list_replication_controllers list_services list_events list_secrets list_endpoints list_deployments)) {
+				my $expectation = Net::Kubernetes::Namespace->expects($list_method);
+				$sut->$list_method;
+				$expectation->verify();
+			}
+		};
+	};
 
 	describe "get_namespace" => sub {
 		it "can get a namespace" => sub {

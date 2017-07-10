@@ -8,7 +8,7 @@ shared_examples_for "all_list_methods" => sub {
 		$method = $config{method};
 	};
 	it "can be called" => sub {
-		can_ok($sut, 'list_pods');
+		can_ok($sut, $config{method});
 	};
 	it "throws an exception if the call returns an error" => sub {
 		$lwpMock->addMock('request')->returns(HTTP::Response->new(401, "you suck"));

@@ -107,7 +107,10 @@ has 'default_namespace' => (
 	isa        => 'Net::Kubernetes::Namespace',
 	required   => 0,
 	lazy       => 1,
-	handles    => [qw(get_pod get_rc get_replication_controller get_secret get_service create create_from_file build_secret)],
+	handles    => [qw(
+		get_pod get_rc get_replication_controller get_secret get_service create create_from_file build_secret 
+		list_rc list_pods list_replication_controllers list_services list_events list_secrets list_endpoints list_deployments
+	)],
 	builder    => '_get_default_namespace',
 );
 
