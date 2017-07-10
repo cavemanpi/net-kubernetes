@@ -12,6 +12,7 @@ require Net::Kubernetes::Resource::Secret;
 require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::ServiceAccount;
 require Net::Kubernetes::Resource::Deployment;
+require Net::Kubernetes::Resource::ReplicaSet;
 
 with 'Net::Kubernetes::Role::ResourceCatalog';
 
@@ -23,7 +24,7 @@ sub create_resource_object {
 	$create_args{api_version} = $object->{apiVersion};
 	$create_args{server_version} = $self->server_version;
 	
-	unless ($self->global_resource($kind)) {
+	unless ($self->is_global_resource($kind)) {
 		$create_args{namespace} = $object->{namespace} || $self->namespace;
 	}
 

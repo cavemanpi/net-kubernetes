@@ -34,6 +34,7 @@ describe "Net::Kubernetes - Namespace" => sub {
 	it_should_behave_like "Service Lister";
 	it_should_behave_like "Secret Lister";
 	it_should_behave_like "Deployment Lister";
+	it_should_behave_like "ReplicaSet Lister";
 
 	describe "get_pod" => sub {
 		it "throws an exception if not given a pod name" => sub {

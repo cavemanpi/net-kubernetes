@@ -38,7 +38,6 @@ require Net::Kubernetes::Exception;
 =cut
 
 with 'Net::Kubernetes::Role::APIAccess';
-with 'Net::Kubernetes::Role::Lister';
 with 'Net::Kubernetes::Role::ResourceFetcher';
 
 =method new - Create a new $kube object
@@ -109,7 +108,8 @@ has 'default_namespace' => (
 	lazy       => 1,
 	handles    => [qw(
 		get_pod get_rc get_replication_controller get_secret get_service create create_from_file build_secret 
-		list_rc list_pods list_replication_controllers list_services list_events list_secrets list_endpoints list_deployments
+		list_rc list_pods list_replication_controllers list_services list_events list_secrets list_endpoints 
+		list_deployments list_rs list_replica_sets
 	)],
 	builder    => '_get_default_namespace',
 );

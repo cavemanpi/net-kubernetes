@@ -16,8 +16,8 @@ retreive a list of pods associated with with respource (either ReplicationContro
 
 sub get_pods {
 	my($self) = @_;
-	my $uri = URI->new($self->resource_path('Pod'));
-	$uri->query_form(labelSelector=>$self->_build_selector_from_hash($self->spec->{selector}));
+	my $uri = URI->new($self->get_resource_path('Pod'));
+	$uri->query_form(labelSelector=>$self->build_selector_from_hash($self->spec->{selector}));
 	my $res = $self->ua->request($self->create_request(GET => $uri));
 	if ($res->is_success) {
 		my $pod_list = $self->json->decode($res->content);
@@ -31,53 +31,15 @@ sub get_pods {
 			$create_args{password} = $self->password if($self->password);
 			$create_args{url} = $self->url;
 			$create_args{base_path} = $pod->{metadata}{selfLink};
+			$create_args{ssl_cert_file} = $self->ssl_cert_file if($self->ssl_cert_file);
+			$create_args{ssl_key_file} = $self->ssl_key_file if($self->ssl_key_file);
+			$create_args{ssl_ca_file} = $self->ssl_ca_file if($self->ssl_ca_file);
 			push @pods, Net::Kubernetes::Resource::Pod->new(%create_args);
 		}
 		return wantarray ? @pods : \@pods;
 	}else{
 		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
 	}
-}
-
-sub _build_selector_from_hash {
-	my($self, $select_hash) = @_;
-	my(@selectors);
-
-	my %labels;
-	my @expressions;
-	if (ref($select_hash->{matchLabels}) || ref($select_hash->{matchExpressions})) {
-		if ($select_hash->{matchLabels}) {
-			%labels = %{$select_hash->{matchLabels}};
-		}
-
-		if ($select_hash->{matchExpressions}) {
-			@expressions = @{$select_hash->{matchExpressions}};
-		}
-	}
-	else {
-		%labels = %$select_hash;
-	}
-
-	foreach my $label (keys %labels){
-		push @selectors, $label . '=' . $labels{$label};
-	}
-	foreach my $expression (@expressions) {
-		my $operator = lc($expression->{operator});
-		my $selector;
-		if ($operator eq 'exists') {
-			$selector = $expression->{key};
-		}
-		elsif ($operator eq 'doesnotexist') {
-			$selector = "!$expression->{key}";
-		}
-		else {
-			$selector = "$expression->{key} $operator (" . join(',', @{$expression->{values}}) . ")";
-		}
-
-		push @selectors, $selector;
-	}
-
-	return join(",", @selectors);
 }
 
 return 42;

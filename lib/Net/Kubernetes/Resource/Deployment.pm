@@ -6,6 +6,7 @@ extends 'Net::Kubernetes::Resource';
 with 'Net::Kubernetes::Resource::Role::State';
 with 'Net::Kubernetes::Resource::Role::Spec';
 with 'Net::Kubernetes::Resource::Role::HasPods';
+with 'Net::Kubernetes::Resource::Role::HasReplicaSets';
 
 sub scale {
     my($self, $replicas, $timeout) = @_;

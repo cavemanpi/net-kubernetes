@@ -196,5 +196,46 @@ sub create_request {
 	return $req;
 }
 
+sub build_selector_from_hash {
+	my($self, $select_hash) = @_;
+	my(@selectors);
+
+	my %labels;
+	my @expressions;
+	if (ref($select_hash->{matchLabels}) || ref($select_hash->{matchExpressions})) {
+		if ($select_hash->{matchLabels}) {
+			%labels = %{$select_hash->{matchLabels}};
+		}
+
+		if ($select_hash->{matchExpressions}) {
+			@expressions = @{$select_hash->{matchExpressions}};
+		}
+	}
+	else {
+		%labels = %$select_hash;
+	}
+
+	foreach my $label (keys %labels){
+		push @selectors, $label . '=' . $labels{$label};
+	}
+	foreach my $expression (@expressions) {
+		my $operator = lc($expression->{operator});
+		my $selector;
+		if ($operator eq 'exists') {
+			$selector = $expression->{key};
+		}
+		elsif ($operator eq 'doesnotexist') {
+			$selector = "!$expression->{key}";
+		}
+		else {
+			$selector = "$expression->{key} $operator (" . join(',', @{$expression->{values}}) . ")";
+		}
+
+		push @selectors, $selector;
+	}
+
+	return join(",", @selectors);
+}
+
 
 return 42;

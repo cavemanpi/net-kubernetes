@@ -16,6 +16,7 @@ my %endpoint_catalog = (
 		secret                => 'api/v1',
 		endpoint              => 'api/v1',
 		deployment            => 'apis/extensions/v1beta1',
+		replicaset            => 'apis/extensions/v1beta1',
 	},
 	1.6 => {
 		pod                   => 'api/v1',
@@ -27,6 +28,7 @@ my %endpoint_catalog = (
 		secret                => 'api/v1',
 		endpoint              => 'api/v1',
 		deployment            => 'apis/apps/v1beta1',
+		replicaset            => 'apis/extensions/v1beta1',
 	},
 );
 
@@ -41,7 +43,7 @@ Returns the full path of resources for the given version of kubernetes.
 
 =cut
 
-sub resource_path {
+sub get_resource_path {
 	my ($self, $resource) = @_;
 	my $namespace      = $self->namespace;
 	my $url            = $self->url;
@@ -50,20 +52,20 @@ sub resource_path {
 	$resource          = lc($resource);
 	my $resource_api   = $endpoint_catalog{$server_version}{$resource} || 'api/v1';
 
-	if ($self->global_resource($resource)) {
+	if ($self->is_global_resource($resource)) {
 		return "$url/$resource_api/${resource}s";
 	}
 	
 	return "$url/$resource_api/namespaces/$namespace/${resource}s";
 }
 
-=method global_resource
+=method is_global_resource
 
 Returns a boolean indicating if the specified resource kind is a global within kubernetes.
 
 =cut 
 
-sub global_resource {
+sub is_global_resource {
 	my ($self, $resource) = @_;
 
 	$resource = lc($resource);

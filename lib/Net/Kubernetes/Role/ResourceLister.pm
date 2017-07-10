@@ -7,7 +7,6 @@ require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::Pod;
 require Net::Kubernetes::Resource::ReplicationController;
 
-with 'Net::Kubernetes::Role::Lister';
 with 'Net::Kubernetes::Role::ResourceFactory';
 with 'Net::Kubernetes::Role::ResourceCatalog';
 
@@ -100,12 +99,33 @@ sub list_deployments {
 	return $self->_retrieve_list('Deployment', %options);
 }
 
+=method list_replica_sets([label=>{label=>value}], [fields=>{field=>value}])
+
+returns a list of L<Net::Kubernetes::Resource::ReplicaSet>s
+
+=cut
+
+=method list_rs([label=>{label=>value}], [fields=>{field=>value}])
+
+returns a list of L<Net::Kubernetes::Resource::ReplicaSet>s
+
+=cut
+
+alias list_rs => 'list_replica_sets';
+
+sub list_replica_sets {
+	my $self = shift;
+	my %options = $self->_norm_options(@_);
+
+	return $self->_retrieve_list('ReplicaSet', %options);
+}
+
 sub _retrieve_list {
 	my $self = shift;
 	my $resource_kind = shift;
 	my %options = $self->_norm_options(@_);
 
-	my $uri = URI->new($self->resource_path($resource_kind));
+	my $uri = URI->new($self->get_resource_path($resource_kind));
 	my(%form) = ();
 	$form{labelSelector}=$self->build_selector_from_hash($options{labels}) if (exists $options{labels});
 	$form{fieldSelector}=$self->build_selector_from_hash($options{fields}) if (exists $options{fields});
