@@ -77,6 +77,19 @@ shared_examples_for "Replication Controller Lister" => sub {
 	};
 };
 
+shared_examples_for "Deployment Lister" => sub {
+	before sub {
+		$config{method} = 'list_deployments';
+	};
+	it_should_behave_like "all_list_methods";
+	it "returns an array of ReplicationControllers" => sub {
+		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"status":"ok", "apiVersion":"v1beta3", "items":[{"spec":{}, "metadata":{"selfLink":"/path/to/me"}, "status":{}}]}'));
+		my $res = $sut->list_rc;
+		isa_ok($res, 'ARRAY');
+		isa_ok($res->[0], 'Net::Kubernetes::Resource::ReplicationController');
+	};
+};
+
 shared_examples_for "Service Lister" => sub {
 	before sub {
 		$config{method} = 'list_services';

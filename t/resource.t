@@ -136,6 +136,31 @@ describe "Net::Kubernetes - Replication Controller Objects " => sub {
 
 };
 
+describe "Net::Kubernetes - Deployment Objects " => sub {
+	before all => sub {
+		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
+		$ns = Net::Kubernetes::Namespace->new(
+			base_path      => '/api/v1beta3/namespaces/default',
+			server_version => '1.5',
+			namespace      => 'default',
+		);
+		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{"selector":{"name":"myReplicates"}}, "metadata":{"selfLink":"/api/v1beta3/namespaces/default/replicationcontrollers/myRc"}, "status":{}, "kind":"Deployment", "apiVersion":"v1beta3"}'));
+		$sut = $ns->get_rc('meDeploy');
+	};
+	before sub {
+		$lwpMock->resetCalls;
+	};
+
+	it_should_behave_like "All Resources";
+	it_should_behave_like "Stateful Resources";
+	it_should_behave_like "Pod Container";
+
+	it "has a spec" => sub {
+		ok($sut->spec);
+	};
+
+};
+
 describe "Net::Kubernetes - Pod Objects " => sub {
 	before all => sub {
 		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
