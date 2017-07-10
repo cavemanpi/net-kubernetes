@@ -38,7 +38,7 @@ require Net::Kubernetes::Exception;
 =cut
 
 with 'Net::Kubernetes::Role::APIAccess';
-with 'Net::Kubernetes::Role::ResourceLister';
+with 'Net::Kubernetes::Role::Lister';
 with 'Net::Kubernetes::Role::ResourceFetcher';
 
 =method new - Create a new $kube object
@@ -163,8 +163,8 @@ sub list_nodes {
 
 	my $uri = URI->new($self->path.'/nodes');
 	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
+	$form{labelSelector}=$self->build_selector_from_hash($options{labels}) if (exists $options{labels});
+	$form{fieldSelector}=$self->build_selector_from_hash($options{fields}) if (exists $options{fields});
 	$uri->query_form(%form);
 
 	my $res = $self->ua->request($self->create_request(GET => $uri));
@@ -204,8 +204,8 @@ sub list_service_accounts {
 
 	my $uri = URI->new($self->path.'/serviceaccounts');
 	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
+	$form{labelSelector}=$self->build_selector_from_hash($options{labels}) if (exists $options{labels});
+	$form{fieldSelector}=$self->build_selector_from_hash($options{fields}) if (exists $options{fields});
 	$uri->query_form(%form);
 
 	my $res = $self->ua->request($self->create_request(GET => $uri));

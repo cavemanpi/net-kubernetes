@@ -7,6 +7,7 @@ require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::Pod;
 require Net::Kubernetes::Resource::ReplicationController;
 
+with 'Net::Kubernetes::Role::Lister';
 with 'Net::Kubernetes::Role::ResourceFactory';
 
 requires 'ua';
@@ -109,8 +110,8 @@ sub _retrieve_list {
 	my $path = $options{base_path} || $self->path;
 	my $uri = URI->new("$path/" . lc($resource_kind) . 's');
 	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
+	$form{labelSelector}=$self->build_selector_from_hash($options{labels}) if (exists $options{labels});
+	$form{fieldSelector}=$self->build_selector_from_hash($options{fields}) if (exists $options{fields});
 	$uri->query_form(%form);
 
 	my $res = $self->ua->request($self->create_request(GET => $uri));
@@ -127,15 +128,6 @@ sub _retrieve_list {
 	}else{
 		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
 	}
-}
-
-sub _build_selector_from_hash {
-	my($self, $select_hash) = @_;
-	my(@selectors);
-	foreach my $label (keys %{ $select_hash }){
-		push @selectors, $label.'='.$select_hash->{$label};
-	}
-	return \@selectors;
 }
 
 sub _norm_options {
