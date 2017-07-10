@@ -13,7 +13,9 @@ describe "Net::Kubernetes" => sub {
 	before sub {
 		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
 		lives_ok {
-			$sut = Net::Kubernetes->new;
+			$sut = Net::Kubernetes->new(
+				server_version => '1.5'
+			);
 		}
 	};
 	spec_helper "resource_lister_examples.pl";

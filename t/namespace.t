@@ -16,7 +16,11 @@ describe "Net::Kubernetes - Namespace" => sub {
 	before sub {
 		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
 		lives_ok {
-			$sut = Net::Kubernetes::Namespace->new(base_path=>'/api/v1beta3/namespaces/default');
+			$sut = Net::Kubernetes::Namespace->new(
+				base_path      => '/api/v1beta3/namespaces/default',
+				namespace      => 'default',
+				server_version => '1.5',
+			);
 		};
 	};
 	it "can be instantiated" => sub {

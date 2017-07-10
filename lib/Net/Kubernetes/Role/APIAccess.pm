@@ -8,6 +8,7 @@ use JSON::MaybeXS;
 require Cpanel::JSON::XS;
 require URI;
 use MIME::Base64;
+use syntax "try";
 
 
 has url => (
@@ -21,6 +22,14 @@ has api_version => (
 	is       => 'ro',
 	isa      => 'Str',
 	required => 1,
+);
+
+has server_version => (
+	is       => 'ro',
+	isa      => 'Str',
+	required => 1,
+	lazy     => 1,
+	builder  => '_build_server_version',
 );
 
 has base_path => (
@@ -130,6 +139,14 @@ sub path {
 	return $self->url.$self->base_path;
 }
 
+sub _build_server_version {
+	my $self = shift;
+
+	my($version_info) = $self->send_request($self->create_request(GET => $self->url . '/version'));
+	return "$version_info->{major}.$version_info->{minor}";
+
+}
+
 sub _build_lwp_agent {
 	my $self = shift;
 	my $ua = LWP::UserAgent->new(agent=>'net-kubernetes-perl/0.20');
@@ -142,6 +159,25 @@ sub _build_lwp_agent {
         });
     }
 	return $ua;
+}
+
+sub send_request {
+	my ($self, $req) = @_;
+	my ($res) = $self->ua->request($req);
+
+	unless ($res->is_success) {
+		my $message;
+		try{
+			my $obj = $self->json->decode($res->content);
+			$message = $obj->{message};
+		}
+		catch($e) {
+			$message = $res->message;
+		}
+		Net::Kubernetes::Exception->throw(code=>$res->code, message=>$message);
+	}
+
+	return $self->json->decode($res->content);
 }
 
 sub _build_json {
