@@ -90,6 +90,24 @@ shared_examples_for "Pod Container" => sub {
 	};
 };
 
+shared_examples_for "ReplicaSet Container" => sub {
+	it "can get a list of replica sets" => sub {
+		can_ok($sut, 'get_replica_sets');
+	};
+	it "makes a get request" => sub {
+		$sut->get_replica_sets();
+		my($call) = $lwpMock->verify('request')->once->getCalls->[0];
+		isa_ok($call->[1], 'HTTP::Request');
+		is($call->[1]->method, 'GET');
+	};
+	it "Requests path based upon the catalog listing for replica sets" => sub {
+		$sut->get_replica_sets();
+		my($call) = $lwpMock->verify('request')->once->getCalls->[0];
+		isa_ok($call->[1], 'HTTP::Request');
+		like($call->[1]->uri, qr{/apis/extensions/v1beta1/namespaces/default/replicasets});
+	};
+};
+
 describe "Net::Kubernetes - All Resource Objects" => sub {
 	before all => sub {
 		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
@@ -136,6 +154,33 @@ describe "Net::Kubernetes - Replication Controller Objects " => sub {
 
 };
 
+describe "Net::Kubernetes - Replica Set Objects " => sub {
+	before all => sub {
+		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
+		lives_ok {
+			$ns = Net::Kubernetes::Namespace->new(
+				base_path      => '/api/v1beta3/namespaces/default',
+				server_version => '1.5',
+				namespace      => 'default',
+			);
+		};
+		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{"selector":{"name":"myReplicates"}}, "metadata":{"selfLink":"/api/v1beta3/namespaces/default/replicationcontrollers/myRc"}, "status":{}, "kind":"ReplicaSet", "apiVersion":"v1beta3"}'));
+		$sut = $ns->get_rc('myRc');
+	};
+	before sub {
+		$lwpMock->resetCalls;
+	};
+
+	it_should_behave_like "All Resources";
+	it_should_behave_like "Stateful Resources";
+	it_should_behave_like "Pod Container";
+
+	it "has a spec" => sub {
+		ok($sut->spec);
+	};
+
+};
+
 describe "Net::Kubernetes - Deployment Objects " => sub {
 	before all => sub {
 		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
@@ -154,6 +199,7 @@ describe "Net::Kubernetes - Deployment Objects " => sub {
 	it_should_behave_like "All Resources";
 	it_should_behave_like "Stateful Resources";
 	it_should_behave_like "Pod Container";
+	it_should_behave_like "ReplicaSet Container";
 
 	it "has a spec" => sub {
 		ok($sut->spec);
