@@ -2,6 +2,20 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+  - Adds support for deployments and replica sets.
+
+  - Begin deprecation of api_version as various resources have different version info.
+
+  - Adds server version detection.
+
+  - Adds internal cataloging of resource endpoints to server versions.
+
+  - Net::Kuberentes now delegates all namespaced resource listing to the default namespace.
+
+  - Consolidate some repeated code.
+
+  - Add support for match expressions in label selectors.
+
 1.03 Tue Jul 12 2016
 
   - Bug fix for boolean values passed to kubernetes via json.

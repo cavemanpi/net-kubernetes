@@ -2,11 +2,11 @@
 
 Net::Kubernetes - An object oriented interface to the REST API's provided by kubernetes
 
-[![Build Status](https://travis-ci.org/perljedi/net-kubernetes.png?branch=master)](https://travis-ci.org/perljedi/net-kubernetes)
+[![Build Status](https://travis-ci.org/cavemanpi/net-kubernetes.png?branch=master)](https://travis-ci.org/cavemanpi/net-kubernetes)
 
 # VERSION
 
-version 1.03
+version 1.04
 
 # SYNOPSIS
 
@@ -57,8 +57,8 @@ All parameters are optional and have some basic default values (where appropriat
 
 - ssl\_cert\_file, ssl\_key\_file, ssl\_ca\_file
 
-    When these options are passed into new, Net::Kubernetes will inlcude SSL client certs in requests to the kuberernetes
-    API server for authentication.  They are basically just a passed through to the underlying LWP::UserAgent used to handle
+    This there options passed into new will cause Net::Kubernetes in inlcude SSL client certs to requests to the kuberernetes
+    API server for authentication.  There are basically just a passthrough to the underlying LWP::UserAgent used to handle the 
     api requests.
 
 ## get\_namespace("myNamespace");
@@ -98,7 +98,7 @@ returns a list of [Net::Kubernetes::Resource::Service](https://metacpan.org/pod/
 
 # AUTHOR
 
-Dave Mueller &lt;dave@perljedi.com>
+Dave Mueller <dave@perljedi.com>
 
 # COPYRIGHT AND LICENSE
 
@@ -118,13 +118,13 @@ Please see those modules/websites for more information related to this module.
 # CONSUMES
 
 - [Net::Kubernetes::Role::APIAccess](https://metacpan.org/pod/Net::Kubernetes::Role::APIAccess)
+- [Net::Kubernetes::Role::ResourceCatalog](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceCatalog)
 - [Net::Kubernetes::Role::ResourceFactory](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFactory)
 - [Net::Kubernetes::Role::ResourceFetcher](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFetcher)
-- [Net::Kubernetes::Role::ResourceLister](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceLister)
 
 # CONTRIBUTORS
 
-- Christopher Pruden &lt;cdpruden@liquidweb.com>
-- Dave &lt;dave@perljedi.com>
-- Dave Mueller &lt;dmueller@liquidweb.com>
-- Kevin Johnson &lt;kcavemanj@gmail.com>
+- Christopher Pruden <cdpruden@liquidweb.com>
+- Dave <dave@perljedi.com>
+- Dave Mueller <dmueller@liquidweb.com>
+- Kevin Johnson <kcavemanj@gmail.com>
