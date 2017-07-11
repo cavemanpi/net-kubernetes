@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.04 Tue Jul 11 2017
+
   - Adds support for deployments and replica sets.
 
   - Begin deprecation of api_version as various resources have different version info.
