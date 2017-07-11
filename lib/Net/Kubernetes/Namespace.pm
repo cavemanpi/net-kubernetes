@@ -8,7 +8,7 @@ use syntax 'try';
 has namespace => (
 	is       => 'ro',
 	isa      => 'Str',
-	required => 0,
+	required => 1,
 );
 
 has _namespace_data => (
@@ -32,31 +32,46 @@ with 'Net::Kubernetes::Role::SecretBuilder';
 
 =method $ns->get_secret('my-secret-name')
 
+=method $ns->get_deployment('my-deployment-name')
+
 =cut
 
 sub get_secret {
-	my($self, $name) = @_;
+	my ($self, $name) = @_;
 	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'secrets');
+	return $self->get_resource_by_name($name, 'secret');
 }
 
 sub get_pod {
-	my($self, $name) = @_;
+	my ($self, $name) = @_;
 	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'pods');
+	return $self->get_resource_by_name($name, 'pod');
 }
 
 sub get_service {
-	my($self, $name) = @_;
+	my ($self, $name) = @_;
 	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'services');
+	return $self->get_resource_by_name($name, 'service');
 }
 
 sub get_replication_controller {
-	my($self, $name) = @_;
+	my ($self, $name) = @_;
 	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'replicationcontrollers');
+	return $self->get_resource_by_name($name, 'replicationcontroller');
 }
 alias get_rc => 'get_replication_controller';
+
+sub get_deployment {
+	my ($self, $name) = @_;
+	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
+	return $self->get_resource_by_name($name, 'deployment');
+}
+
+sub get_replica_set {
+	my($self, $name) = @_;
+	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
+	return $self->get_resource_by_name($name, 'replicaset');
+}
+alias get_rs => 'get_replica_set';
 
 return 42;

@@ -2,21 +2,33 @@
 
 Net::Kubernetes - An object oriented interface to the REST API's provided by kubernetes
 
-[![Build Status](https://travis-ci.org/perljedi/net-kubernetes.png?branch=master)](https://travis-ci.org/perljedi/net-kubernetes)
+[![Build Status](https://travis-ci.org/cavemanpi/net-kubernetes.png?branch=master)](https://travis-ci.org/cavemanpi/net-kubernetes)
 
 # VERSION
 
-version 1.03
+version 1.04
 
 # SYNOPSIS
 
     my $kube = Net::Kubernetes->new(url=>'http://127.0.0.1:8080', username=>'dave', password=>'davespassword');
+
+    # List methods will return either a list or an array reference.
     my $pod_list = $kube->list_pods();
+    my @pods     = $kube->list_pods();
+
+    my @rcs  = $kube->list_replication_controllers();
+    my @rcs2 = $kube->list_rc();
+
+    my @deployments  = $kube->list_deployments();
+    
+    my @replica_sets  = $keyb->list_replica_sets();
+    my @replica_sets2 = $keyb->list_rs();
 
     my $nginx_pod = $kube->create_from_file('kubernetes/examples/pod.yaml');
 
     my $ns = $kube->get_namespace('default');
 
+    # Namespaces contain all the list methods above as well.
     my $services = $ns->list_services;
 
     my $pod = $ns->get_pod('my-pod');
@@ -61,6 +73,11 @@ All parameters are optional and have some basic default values (where appropriat
     API server for authentication.  There are basically just a passthrough to the underlying LWP::UserAgent used to handle the 
     api requests.
 
+- server\_version
+
+    This module attempts to make some decisions on how it talks to kubernetes based upon the version of kubernetes it connects to.
+    If this is not passed in, the first call to kubernetes will attempt to retrieve server version information from the server.
+
 ## get\_namespace("myNamespace");
 
 This method returns a "Namespace" object on which many methods can be called implicitly
@@ -98,11 +115,11 @@ returns a list of [Net::Kubernetes::Resource::Service](https://metacpan.org/pod/
 
 # AUTHOR
 
-Dave Mueller &lt;dave@perljedi.com>
+Dave Mueller <dave@perljedi.com>
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2015 by Dave Mueller.
+This software is Copyright (c) 2015 by Liquid Web Inc.
 
 This is free software, licensed under:
 
@@ -118,13 +135,13 @@ Please see those modules/websites for more information related to this module.
 # CONSUMES
 
 - [Net::Kubernetes::Role::APIAccess](https://metacpan.org/pod/Net::Kubernetes::Role::APIAccess)
+- [Net::Kubernetes::Role::ResourceCatalog](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceCatalog)
 - [Net::Kubernetes::Role::ResourceFactory](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFactory)
 - [Net::Kubernetes::Role::ResourceFetcher](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFetcher)
-- [Net::Kubernetes::Role::ResourceLister](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceLister)
 
 # CONTRIBUTORS
 
-- Christopher Pruden &lt;cdpruden@liquidweb.com>
-- Dave &lt;dave@perljedi.com>
-- Dave Mueller &lt;dmueller@liquidweb.com>
-- Kevin Johnson &lt;kcavemanj@gmail.com>
+- Christopher Pruden <cdpruden@liquidweb.com>
+- Dave <dave@perljedi.com>
+- Dave Mueller <dmueller@liquidweb.com>
+- Kevin Johnson <kcavemanj@gmail.com>

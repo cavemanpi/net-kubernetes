@@ -17,7 +17,7 @@ sub get_pods {
     }else{
         $selector->{'spec.host'} = $self->metadata->{name};
     }
-    $uri->query_form(fieldSelector=>$self->_build_selector_from_hash($selector));
+    $uri->query_form(fieldSelector=>$self->build_selector_from_hash($selector));
     print "Query with $uri\n";
     my $res = $self->ua->request($self->create_request(GET => $uri));
     if ($res->is_success) {
@@ -37,15 +37,6 @@ sub get_pods {
     }else{
         Net::Kubernetes::Exception->throw(code=>$res->code, message=>$res->message);
     }
-}
-
-sub _build_selector_from_hash {
-	my($self, $select_hash) = @_;
-	my(@selectors);
-	foreach my $label (keys %{ $select_hash }){
-		push @selectors, $label.'='.$select_hash->{$label};
-	}
-	return join(",", @selectors);
 }
 
 return 42;

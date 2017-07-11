@@ -13,12 +13,24 @@ require Net::Kubernetes::Exception;
 =head1 SYNOPSIS
 
   my $kube = Net::Kubernetes->new(url=>'http://127.0.0.1:8080', username=>'dave', password=>'davespassword');
+
+  # List methods will return either a list or an array reference.
   my $pod_list = $kube->list_pods();
+  my @pods     = $kube->list_pods();
+
+  my @rcs  = $kube->list_replication_controllers();
+  my @rcs2 = $kube->list_rc();
+
+  my @deployments  = $kube->list_deployments();
+  
+  my @replica_sets  = $keyb->list_replica_sets();
+  my @replica_sets2 = $keyb->list_rs();
 
   my $nginx_pod = $kube->create_from_file('kubernetes/examples/pod.yaml');
 
   my $ns = $kube->get_namespace('default');
 
+  # Namespaces contain all the list methods above as well.
   my $services = $ns->list_services;
 
   my $pod = $ns->get_pod('my-pod');
@@ -38,7 +50,6 @@ require Net::Kubernetes::Exception;
 =cut
 
 with 'Net::Kubernetes::Role::APIAccess';
-with 'Net::Kubernetes::Role::ResourceLister';
 with 'Net::Kubernetes::Role::ResourceFetcher';
 
 =method new - Create a new $kube object
@@ -77,6 +88,11 @@ This there options passed into new will cause Net::Kubernetes in inlcude SSL cli
 API server for authentication.  There are basically just a passthrough to the underlying LWP::UserAgent used to handle the 
 api requests.
 
+=item server_version
+
+This module attempts to make some decisions on how it talks to kubernetes based upon the version of kubernetes it connects to.
+If this is not passed in, the first call to kubernetes will attempt to retrieve server version information from the server.
+
 =back
 
 =method get_namespace("myNamespace");
@@ -107,7 +123,13 @@ has 'default_namespace' => (
 	isa        => 'Net::Kubernetes::Namespace',
 	required   => 0,
 	lazy       => 1,
-	handles    => [qw(get_pod get_rc get_replication_controller get_secret get_service create create_from_file build_secret)],
+	handles    => [qw(
+		build_secret create create_from_file get_deployment get_pod
+		get_rc get_replica_set get_replication_controller get_rs
+		get_secret get_service list_deployments list_endpoints
+		list_events list_pods list_rc list_replica_sets
+		list_replication_controllers list_rs list_secrets list_services
+	)],
 	builder    => '_get_default_namespace',
 );
 
@@ -116,10 +138,22 @@ sub get_namespace {
 	if (! defined $namespace || ! length $namespace) {
 		Throwable::Error->throw(message=>'$namespace cannot be null');
 	}
-	my $res = $self->ua->request($self->create_request(GET => $self->path.'/namespaces/'.$namespace));
+	my $namespace_path = $self->base_path . "/namespaces/$namespace";
+	my $res = $self->ua->request($self->create_request(GET => $self->url . $namespace_path));
 	if ($res->is_success) {
 		my $ns = $self->json->decode($res->content);
-		my(%create_args) = (url => $self->url, base_path=>$ns->{metadata}{selfLink}, api_version=>$self->api_version, namespace=> $namespace, _namespace_data=>$ns);
+		
+		# Somewhere between Kubernetes 1.2 and 1.5, the self link for namespaces broke. So for now, we can't trust them.
+		# to populate the base_path. A bug report indicates that this bug is fixed in 1.7.
+		# https://github.com/kubernetes/kubernetes/issues/48321
+		my(%create_args) = (
+			url             => $self->url, 
+			base_path       => $namespace_path, 
+			server_version  => $self->server_version,
+			api_version     => $self->api_version, 
+			namespace       => $namespace, 
+			_namespace_data => $ns
+		);
 		$create_args{username} = $self->username if(defined $self->username);
 		$create_args{password} = $self->password if(defined $self->password);
 		$create_args{ssl_cert_file} = $self->ssl_cert_file if(defined $self->ssl_cert_file);
@@ -148,8 +182,8 @@ sub list_nodes {
 
 	my $uri = URI->new($self->path.'/nodes');
 	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
+	$form{labelSelector}=$self->build_selector_from_hash($options{labels}) if (exists $options{labels});
+	$form{fieldSelector}=$self->build_selector_from_hash($options{fields}) if (exists $options{fields});
 	$uri->query_form(%form);
 
 	my $res = $self->ua->request($self->create_request(GET => $uri));
@@ -169,7 +203,7 @@ sub list_nodes {
 sub get_node {
 	my($self, $name) = @_;
 	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'nodes');
+	return $self->get_resource_by_name($name, 'node');
 }
 
 =method list_service_accounts([label=>{label=>value}], [fields=>{field=>value}])
@@ -189,8 +223,8 @@ sub list_service_accounts {
 
 	my $uri = URI->new($self->path.'/serviceaccounts');
 	my(%form) = ();
-	$form{labelSelector}=$self->_build_selector_from_hash($options{labels}) if (exists $options{labels});
-	$form{fieldSelector}=$self->_build_selector_from_hash($options{fields}) if (exists $options{fields});
+	$form{labelSelector}=$self->build_selector_from_hash($options{labels}) if (exists $options{labels});
+	$form{fieldSelector}=$self->build_selector_from_hash($options{fields}) if (exists $options{fields});
 	$uri->query_form(%form);
 
 	my $res = $self->ua->request($self->create_request(GET => $uri));

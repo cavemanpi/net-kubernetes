@@ -6,6 +6,7 @@ use MooseX::Aliases;
 require YAML::XS;
 require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::Pod;
+require Net::Kubernetes::Resource::Deployment;
 require Net::Kubernetes::Resource::ReplicationController;
 require Net::Kubernetes::Resource::Secret;
 require Net::Kubernetes::Exception;
@@ -18,6 +19,7 @@ with 'Net::Kubernetes::Role::ResourceFactory';
 requires 'ua';
 requires 'create_request';
 requires 'json';
+requires 'namespace';
 
 =method create({OBJECT})
 
@@ -64,7 +66,29 @@ sub create {
 	my $validBooleanProperties = qr/readOnly(?:RootFilesystem)?|hostNetwork|hostPID|hostIPC|stdin(?:Once)?|tty|runAsNonRoot|privileged|ready|unschedulable/;
 	$content =~ s/((["'])(?:$validBooleanProperties)\2:\s)(["'])(true|false)\3/$1$4/g;
 	# /EndHack
-    my $req = $self->create_request(POST=>$self->path.'/'.lc($object->{kind}).'s', undef, $content);
+
+	# It looks like some objects have particular versioning and special paths.
+	# Kubernetes is already training its users to provide apiVersion in the yaml
+	# on a per resource level, so asking for the apiVersion per object seems 
+	# reasonable.
+	my $resource_path = $self->url;
+	if (my $version = $object->{apiVersion}) {
+		if ($version =~ /\//) {
+			$resource_path .= "/apis/$version";
+		}
+		else {
+			$resource_path .= "/api/$version";
+		}
+
+		$resource_path .= "/namespaces/" . $self->namespace;
+	}
+	else {
+		$resource_path = $self->path;
+	}
+
+	$resource_path .= '/' . lc($object->{kind}) . 's';
+
+	my $req = $self->create_request(POST => $resource_path, undef, $content);
 	my $res = $self->ua->request($req);
 	if ($res->is_success) {
 		return $self->create_resource_object($self->json->decode($res->content));

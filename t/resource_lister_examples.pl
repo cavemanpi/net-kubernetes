@@ -8,7 +8,7 @@ shared_examples_for "all_list_methods" => sub {
 		$method = $config{method};
 	};
 	it "can be called" => sub {
-		can_ok($sut, 'list_pods');
+		can_ok($sut, $config{method});
 	};
 	it "throws an exception if the call returns an error" => sub {
 		$lwpMock->addMock('request')->returns(HTTP::Response->new(401, "you suck"));
@@ -74,6 +74,32 @@ shared_examples_for "Replication Controller Lister" => sub {
 		my $res = $sut->list_rc;
 		isa_ok($res, 'ARRAY');
 		isa_ok($res->[0], 'Net::Kubernetes::Resource::ReplicationController');
+	};
+};
+
+shared_examples_for "Deployment Lister" => sub {
+	before sub {
+		$config{method} = 'list_deployments';
+	};
+	it_should_behave_like "all_list_methods";
+	it "returns an array of Deployments" => sub {
+		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"status":"ok", "apiVersion":"v1beta3", "items":[{"spec":{}, "metadata":{"selfLink":"/path/to/me"}, "status":{}}]}'));
+		my $res = $sut->list_deployments;
+		isa_ok($res, 'ARRAY');
+		isa_ok($res->[0], 'Net::Kubernetes::Resource::Deployment');
+	};
+};
+
+shared_examples_for "ReplicaSet Lister" => sub {
+	before sub {
+		$config{method} = 'list_replica_sets';
+	};
+	it_should_behave_like "all_list_methods";
+	it "returns an array of ReplicaSets" => sub {
+		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"status":"ok", "apiVersion":"v1beta3", "items":[{"spec":{}, "metadata":{"selfLink":"/path/to/me"}, "status":{}}]}'));
+		my $res = $sut->list_rs;
+		isa_ok($res, 'ARRAY');
+		isa_ok($res->[0], 'Net::Kubernetes::Resource::ReplicaSet');
 	};
 };
 
