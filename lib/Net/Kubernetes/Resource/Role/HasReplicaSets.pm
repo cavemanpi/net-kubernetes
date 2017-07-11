@@ -2,7 +2,6 @@ package Net::Kubernetes::Resource::Role::HasReplicaSets;
 # ABSTRACT: Resource role for types that may contain replica sets
 
 use Moose::Role;
-use Data::Dumper;
 
 with 'Net::Kubernetes::Role::APIAccess';
 with 'Net::Kubernetes::Role::ResourceCatalog';
@@ -23,7 +22,6 @@ sub get_replica_sets {
 	if ($res->is_success) {
 		my $set_list = $self->json->decode($res->content);
 		my @sets;
-		warn Dumper($set_list);
 		foreach my $rs (@{ $set_list->{items}}){
 			$rs->{apiVersion} = $set_list->{apiVersion};
 			my(%create_args) = %$rs;
