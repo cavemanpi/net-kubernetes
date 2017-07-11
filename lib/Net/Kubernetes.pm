@@ -13,12 +13,24 @@ require Net::Kubernetes::Exception;
 =head1 SYNOPSIS
 
   my $kube = Net::Kubernetes->new(url=>'http://127.0.0.1:8080', username=>'dave', password=>'davespassword');
+
+  # List methods will return either a list or an array reference.
   my $pod_list = $kube->list_pods();
+  my @pods     = $kube->list_pods();
+
+  my @rcs  = $kube->list_replication_controllers();
+  my @rcs2 = $kube->list_rc();
+
+  my @deployments  = $kube->list_deployments();
+  
+  my @replica_sets  = $keyb->list_replica_sets();
+  my @replica_sets2 = $keyb->list_rs();
 
   my $nginx_pod = $kube->create_from_file('kubernetes/examples/pod.yaml');
 
   my $ns = $kube->get_namespace('default');
 
+  # Namespaces contain all the list methods above as well.
   my $services = $ns->list_services;
 
   my $pod = $ns->get_pod('my-pod');
@@ -75,6 +87,11 @@ to a file handle (from which to read the token).
 This there options passed into new will cause Net::Kubernetes in inlcude SSL client certs to requests to the kuberernetes
 API server for authentication.  There are basically just a passthrough to the underlying LWP::UserAgent used to handle the 
 api requests.
+
+=item server_version
+
+This module attempts to make some decisions on how it talks to kubernetes based upon the version of kubernetes it connects to.
+If this is not passed in, the first call to kubernetes will attempt to retrieve server version information from the server.
 
 =back
 
