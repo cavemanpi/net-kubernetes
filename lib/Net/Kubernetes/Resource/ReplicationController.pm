@@ -16,15 +16,29 @@ with 'Net::Kubernetes::Resource::Role::HasPods';
 
 Fetch a list off all pods belonging to this replication controller.
 
+=mehtod $rc->scale($replicas[, $timeout]);
+
+Scales the replication controller to the requested number of replicas. This
+method will poll waiting for the replicas to reach the requested value for the
+duration specified by $timeout in seconds. 
+
+On success, the string "scaled" is returned. 
+On a timeout, 0 is returned.
+
+If $timeout is -1, then the method will wait indefinitely.
+
+A default scale timeout can be specified by passing scale_timeout
+to the constructor.
+
 =cut
 
 sub scale {
     my($self, $replicas, $timeout) = @_;
-    $timeout ||= 5;
+    $timeout //= $self->scale_timeout;
     $self->spec->{replicas} = $replicas;
     $self->update;
     my $st = time;
-    while((time - $st) < $timeout){
+    while($timeout < 0 || (time - $st) < $timeout){
         my $pods = $self->get_pods;
         if(scalar(@$pods) == $replicas){
             return "scaled";

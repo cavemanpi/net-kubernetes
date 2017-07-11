@@ -98,6 +98,13 @@ has 'ssl_verify' => (
 	required => 0,
 );
 
+has 'scale_timeout' => (
+	is       => 'rw',
+	isa      => 'Num',
+	required => 0,
+	default  => 5,
+);
+
 around BUILDARGS => sub {
 	my $orig = shift;
 	my $class = shift;
