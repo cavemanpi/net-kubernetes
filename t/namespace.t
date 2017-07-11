@@ -58,6 +58,28 @@ describe "Net::Kubernetes - Namespace" => sub {
 			isa_ok($rc, 'Net::Kubernetes::Resource::ReplicationController');
 		};
 	};
+	describe "get_deployment" => sub {
+		it "throws an exception if not given a deployment name" => sub {
+			dies_ok { $sut->get_deployments();   };
+		};
+		it "returns a Net::Kubernetes::Resource::Deployment object on success" => sub {
+			$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{}, "metadata":{"selfLink":"/path/to/me"}, "status":{}, "kind":"Deployment", "apiVersion":"v1beta3"}'));
+			my $deploy;
+			lives_ok { $deploy = $sut->get_deployment('myDeploy');   };
+			isa_ok($deploy, 'Net::Kubernetes::Resource::Deployment');
+		};
+	};
+	describe "get_rs" => sub {
+		it "throws an exception if not given a replica set name" => sub {
+			dies_ok { $sut->get_rs();   };
+		};
+		it "returns a Net::Kubernetes::Resource::ReplicaSet object on success" => sub {
+			$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{}, "metadata":{"selfLink":"/path/to/me"}, "status":{}, "kind":"ReplicaSet", "apiVersion":"v1beta3"}'));
+			my $rs;
+			lives_ok { $rs = $sut->get_rs('myRs');   };
+			isa_ok($rs, 'Net::Kubernetes::Resource::ReplicaSet');
+		};
+	};
 	describe "get_service" => sub {
 		it "throws an exception if not given a pod name" => sub {
 			dies_ok { $sut->get_service();   };
