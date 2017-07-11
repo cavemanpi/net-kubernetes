@@ -124,9 +124,11 @@ has 'default_namespace' => (
 	required   => 0,
 	lazy       => 1,
 	handles    => [qw(
-		get_pod get_rc get_replication_controller get_secret get_service create create_from_file build_secret 
-		list_rc list_pods list_replication_controllers list_services list_events list_secrets list_endpoints 
-		list_deployments list_rs list_replica_sets
+		build_secret create create_from_file get_deployment get_pod
+		get_rc get_replica_set get_replication_controller get_rs
+		get_secret get_service list_deployments list_endpoints
+		list_events list_pods list_rc list_replica_sets
+		list_replication_controllers list_rs list_secrets list_services
 	)],
 	builder    => '_get_default_namespace',
 );
