@@ -80,6 +80,23 @@ describe "Net::Kubernetes - Namespace" => sub {
 			isa_ok($secret, 'Net::Kubernetes::Resource::Secret');
 		};
 	};
+
+	describe "when the server version is higher than a known version" => sub {
+		before sub {
+			$sut = Net::Kubernetes::Namespace->new(
+				base_path      => '/api/v1beta3/namespaces/default',
+				namespace      => 'default',
+				server_version => '9000.1',
+			);
+		};
+
+		it "defaults to the highest version known for resource lookups" => sub {
+			$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{}, "metadata":{"selfLink":"/path/to/me"}, "status":{}, "kind":"Deployment", "apiVersion":"v1beta3"}'));
+			my $deploy = $sut->get_deployment('myDeploy');
+			my $req = $lwpMock->getCallsTo('request')->[0][1];
+			is($req->uri, 'http://localhost:8080/apis/apps/v1beta1/namespaces/default/deployments/myDeploy');
+		};
+	};
 };
 
 runtests;

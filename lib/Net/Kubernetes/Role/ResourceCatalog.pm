@@ -1,6 +1,7 @@
 package Net::Kubernetes::Role::ResourceCatalog;
 
 use Moose::Role;
+use List::Util qw(max);
 
 requires 'server_version';
 requires 'url';
@@ -47,6 +48,11 @@ sub get_resource_path {
 	my ($self, $resource) = @_;
 	my $url            = $self->url;
 	my $server_version = $self->server_version;
+
+	my $max_known_version = max(keys(%endpoint_catalog));
+	if ($server_version > $max_known_version) {
+		$server_version = $max_known_version;
+	}
 
 	$resource          = lc($resource);
 	my $resource_api   = $endpoint_catalog{$server_version}{$resource} || 'api/v1';
