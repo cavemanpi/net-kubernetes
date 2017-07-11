@@ -16,7 +16,7 @@ Fetch a list of all pods belonging to this deployment.
 
 Fetch a list of all replica sets belonging to this deployment.
 
-=mehtod $deployment->scale($replicas[, $timeout]);
+=method $deployment->scale($replicas[, $timeout]);
 
 Scales the deployment to the requested number of replicas. This method will
 poll waiting for the replicas to reach the requested value for the duration

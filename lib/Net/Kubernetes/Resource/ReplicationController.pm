@@ -16,7 +16,7 @@ with 'Net::Kubernetes::Resource::Role::HasPods';
 
 Fetch a list off all pods belonging to this replication controller.
 
-=mehtod $rc->scale($replicas[, $timeout]);
+=method $rc->scale($replicas[, $timeout]);
 
 Scales the replication controller to the requested number of replicas. This
 method will poll waiting for the replicas to reach the requested value for the
