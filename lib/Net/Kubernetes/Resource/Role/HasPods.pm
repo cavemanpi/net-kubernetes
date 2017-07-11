@@ -23,17 +23,18 @@ sub get_pods {
 		my $pod_list = $self->json->decode($res->content);
 		my(@pods)=();
 		foreach my $pod (@{ $pod_list->{items}}){
-			$pod->{apiVersion} = $pod_list->{apiVersion};
-			my(%create_args) = %$pod;
-			$create_args{api_version} = $pod->{apiVersion};
-			$create_args{namespace} = $self->namespace;
-			$create_args{username} = $self->username if($self->username);
-			$create_args{password} = $self->password if($self->password);
-			$create_args{url} = $self->url;
-			$create_args{base_path} = $pod->{metadata}{selfLink};
-			$create_args{ssl_cert_file} = $self->ssl_cert_file if($self->ssl_cert_file);
-			$create_args{ssl_key_file} = $self->ssl_key_file if($self->ssl_key_file);
-			$create_args{ssl_ca_file} = $self->ssl_ca_file if($self->ssl_ca_file);
+			$pod->{apiVersion}           = $pod_list->{apiVersion};
+			my(%create_args)             = %$pod;
+			$create_args{api_version}    = $pod->{apiVersion};
+			$create_args{server_version} = $self->server_version;
+			$create_args{namespace}      = $self->namespace;
+			$create_args{username}       = $self->username if($self->username);
+			$create_args{password}       = $self->password if($self->password);
+			$create_args{url}            = $self->url;
+			$create_args{base_path}      = $pod->{metadata}{selfLink};
+			$create_args{ssl_cert_file}  = $self->ssl_cert_file if($self->ssl_cert_file);
+			$create_args{ssl_key_file}   = $self->ssl_key_file if($self->ssl_key_file);
+			$create_args{ssl_ca_file}    = $self->ssl_ca_file if($self->ssl_ca_file);
 			push @pods, Net::Kubernetes::Resource::Pod->new(%create_args);
 		}
 		return wantarray ? @pods : \@pods;
