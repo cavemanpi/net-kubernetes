@@ -152,9 +152,12 @@ describe "Net::Kubernetes - Replication Controller Objects " => sub {
 		ok($sut->spec);
 	};
 
+	it "has the correct kind" => sub {
+		is($sut->kind, 'ReplicationController');
+	}
 };
 
-describe "Net::Kubernetes - Replica Set Objects " => sub {
+describe "Net::Kubernetes - ReplicaSet Objects " => sub {
 	before all => sub {
 		$lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
 		lives_ok {
@@ -164,8 +167,8 @@ describe "Net::Kubernetes - Replica Set Objects " => sub {
 				namespace      => 'default',
 			);
 		};
-		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{"selector":{"name":"myReplicates"}}, "metadata":{"selfLink":"/api/v1beta3/namespaces/default/replicationcontrollers/myRc"}, "status":{}, "kind":"ReplicaSet", "apiVersion":"v1beta3"}'));
-		$sut = $ns->get_rc('myRc');
+		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{"selector":{"name":"myReplicates"}}, "metadata":{"selfLink":"/api/v1beta3/namespaces/default/replicasets/myRs"}, "status":{}, "kind":"ReplicaSet", "apiVersion":"v1beta3"}'));
+		$sut = $ns->get_rs('myRs');
 	};
 	before sub {
 		$lwpMock->resetCalls;
@@ -179,6 +182,10 @@ describe "Net::Kubernetes - Replica Set Objects " => sub {
 		ok($sut->spec);
 	};
 
+	it "has the correct kind" => sub {
+		is($sut->kind, 'ReplicaSet');
+	}
+
 };
 
 describe "Net::Kubernetes - Deployment Objects " => sub {
@@ -189,8 +196,8 @@ describe "Net::Kubernetes - Deployment Objects " => sub {
 			server_version => '1.5',
 			namespace      => 'default',
 		);
-		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{"selector":{"name":"myReplicates"}}, "metadata":{"selfLink":"/api/v1beta3/namespaces/default/replicationcontrollers/myRc"}, "status":{}, "kind":"Deployment", "apiVersion":"v1beta3"}'));
-		$sut = $ns->get_rc('meDeploy');
+		$lwpMock->addMock('request')->returns(HTTP::Response->new(200, "ok", undef, '{"spec":{"selector":{"name":"myReplicates"}}, "metadata":{"selfLink":"/api/v1beta3/namespaces/default/deployments/meDeploy"}, "status":{}, "kind":"Deployment", "apiVersion":"v1beta3"}'));
+		$sut = $ns->get_deployment('meDeploy');
 	};
 	before sub {
 		$lwpMock->resetCalls;
@@ -204,6 +211,10 @@ describe "Net::Kubernetes - Deployment Objects " => sub {
 	it "has a spec" => sub {
 		ok($sut->spec);
 	};
+
+	it "has the correct kind" => sub {
+		is($sut->kind, 'Deployment');
+	}
 
 };
 
@@ -261,7 +272,11 @@ describe "Net::Kubernetes - Pod Objects " => sub {
 				fail("Should have thrown Net::Kunbernetes::Exception::ClientException, not '$e'");
 			}
 		};
-	}
+	};
+
+	it "has the correct kind" => sub {
+		is($sut->kind, 'Pod');
+	};
 };
 
 describe "Net::Kubernetes - Node Objects " => sub {
@@ -319,6 +334,11 @@ describe "Net::Kubernetes - Node Objects " => sub {
 			my($call) = $lwpMock->verify('request')->once->getCalls->[0];
 			ok($call->[1]->uri =~ m/host/);
 		}
+
+	};
+
+	it "has the correct kind" => sub {
+		is($sut->kind, 'Node');
 	};
 };
 
@@ -363,6 +383,10 @@ describe "Net::Kubernetes - Secret Objects " => sub {
         };
 
     };
+
+    it "has the correct kind" => sub {
+        is($sut->kind, 'Secret');
+    };
 };
 
 describe "Net::Kubernetes - Service Objects " => sub {
@@ -385,6 +409,10 @@ describe "Net::Kubernetes - Service Objects " => sub {
 	it_should_behave_like "All Resources";
 	it_should_behave_like "Stateful Resources";
 	it_should_behave_like "Pod Container";
+
+	it "has the correct kind" => sub {
+		is($sut->kind, 'Service');
+	};
 };
 
 runtests;

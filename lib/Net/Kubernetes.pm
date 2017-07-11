@@ -201,7 +201,7 @@ sub list_nodes {
 sub get_node {
 	my($self, $name) = @_;
 	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'nodes');
+	return $self->get_resource_by_name($name, 'node');
 }
 
 =method list_service_accounts([label=>{label=>value}], [fields=>{field=>value}])

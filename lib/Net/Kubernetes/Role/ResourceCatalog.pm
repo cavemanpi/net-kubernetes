@@ -33,7 +33,7 @@ my %endpoint_catalog = (
 );
 
 my %globals_catalog = (
-	node            => 1,
+	node           => 1,
 	serviceaccount => 1,
 );
 
@@ -45,7 +45,6 @@ Returns the full path of resources for the given version of kubernetes.
 
 sub get_resource_path {
 	my ($self, $resource) = @_;
-	my $namespace      = $self->namespace;
 	my $url            = $self->url;
 	my $server_version = $self->server_version;
 
@@ -55,6 +54,8 @@ sub get_resource_path {
 	if ($self->is_global_resource($resource)) {
 		return "$url/$resource_api/${resource}s";
 	}
+
+	my $namespace      = $self->namespace;
 	
 	return "$url/$resource_api/namespaces/$namespace/${resource}s";
 }

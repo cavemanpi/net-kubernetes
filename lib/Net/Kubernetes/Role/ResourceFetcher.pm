@@ -1,5 +1,5 @@
 package Net::Kubernetes::Role::ResourceFetcher;
-# ABSTRACT: Role to give access to list_* methods.
+# ABSTRACT: Role to give access to get_* methods.
 
 use Moose::Role;
 use MooseX::Aliases;
@@ -9,10 +9,12 @@ require Net::Kubernetes::Resource::Pod;
 require Net::Kubernetes::Resource::ReplicationController;
 
 with 'Net::Kubernetes::Role::ResourceFactory';
+with 'Net::Kubernetes::Role::ResourceCatalog';
 
 sub get_resource_by_name {
 	my($self, $name, $type) = @_;
-	my($res) = $self->ua->request($self->create_request(GET => $self->path.'/'.$type.'/'.$name));
+	my $resource_path = $self->get_resource_path(lc($type));
+	my($res) = $self->ua->request($self->create_request(GET => "$resource_path/$name"));
 	if ($res->is_success) {
 		return $self->create_resource_object($self->json->decode($res->content));
 	}
