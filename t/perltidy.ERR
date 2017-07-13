@@ -1,0 +1,3 @@
+Perltidy version is 20150815
+268:	syntax error at ') {', didn't see one of: case elsif for foreach given if switch unless until when while
+271:	syntax error at ') {', didn't see one of: case elsif for foreach given if switch unless until when while

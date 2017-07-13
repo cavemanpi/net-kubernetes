@@ -1,13 +1,3 @@
-# NAME
-
-Net::Kubernetes - An object oriented interface to the REST API's provided by kubernetes
-
-[![Build Status](https://travis-ci.org/cavemanpi/net-kubernetes.png?branch=master)](https://travis-ci.org/cavemanpi/net-kubernetes)
-
-# VERSION
-
-version 1.04
-
 # SYNOPSIS
 
     my $kube = Net::Kubernetes->new(url=>'http://127.0.0.1:8080', username=>'dave', password=>'davespassword');
@@ -20,7 +10,7 @@ version 1.04
     my @rcs2 = $kube->list_rc();
 
     my @deployments  = $kube->list_deployments();
-    
+
     my @replica_sets  = $keyb->list_replica_sets();
     my @replica_sets2 = $keyb->list_rs();
 
@@ -37,7 +27,11 @@ version 1.04
 
     my $other_pod = $ns->create_from_file('./my-pod.yaml');
 
-# METHODS
+<div>
+    <h2>Build Status</h2>
+
+    <img src="https://travis-ci.org/perljedi/net-kubernetes.svg?branch=release-0.21" />
+</div>
 
 ## new - Create a new $kube object
 
@@ -70,7 +64,7 @@ All parameters are optional and have some basic default values (where appropriat
 - ssl\_cert\_file, ssl\_key\_file, ssl\_ca\_file
 
     This there options passed into new will cause Net::Kubernetes in inlcude SSL client certs to requests to the kuberernetes
-    API server for authentication.  There are basically just a passthrough to the underlying LWP::UserAgent used to handle the 
+    API server for authentication.  There are basically just a passthrough to the underlying LWP::UserAgent used to handle the
     api requests.
 
 - server\_version
@@ -106,42 +100,3 @@ returns a list of [Net::Kubernetes::Resource::Node](https://metacpan.org/pod/Net
 ## list\_service\_accounts(\[label=>{label=>value}\], \[fields=>{field=>value}\])
 
 returns a list of [Net::Kubernetes::Resource::Service](https://metacpan.org/pod/Net::Kubernetes::Resource::Service)s
-
-<div>
-    <h2>Build Status</h2>
-
-    <img src="https://travis-ci.org/perljedi/net-kubernetes.svg?branch=release-0.21" />
-</div>
-
-# AUTHOR
-
-Dave Mueller <dave@perljedi.com>
-
-# COPYRIGHT AND LICENSE
-
-This software is Copyright (c) 2015 by Liquid Web Inc.
-
-This is free software, licensed under:
-
-    The MIT (X11) License
-
-# SEE ALSO
-
-Please see those modules/websites for more information related to this module.
-
-- [Net::Kubernetes::Namespace](https://metacpan.org/pod/Net::Kubernetes::Namespace)
-- [Net::Kubernetes::Resource](https://metacpan.org/pod/Net::Kubernetes::Resource)
-
-# CONSUMES
-
-- [Net::Kubernetes::Role::APIAccess](https://metacpan.org/pod/Net::Kubernetes::Role::APIAccess)
-- [Net::Kubernetes::Role::ResourceCatalog](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceCatalog)
-- [Net::Kubernetes::Role::ResourceFactory](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFactory)
-- [Net::Kubernetes::Role::ResourceFetcher](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFetcher)
-
-# CONTRIBUTORS
-
-- Christopher Pruden <cdpruden@liquidweb.com>
-- Dave <dave@perljedi.com>
-- Dave Mueller <dmueller@liquidweb.com>
-- Kevin Johnson <kcavemanj@gmail.com>

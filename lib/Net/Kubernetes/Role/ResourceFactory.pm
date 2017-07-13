@@ -1,4 +1,5 @@
 package Net::Kubernetes::Role::ResourceFactory;
+
 # ABSTRACT: Role to allow easy construction of Net::Kubernetes::Resouce::* objects
 
 use Moose::Role;
@@ -17,27 +18,26 @@ require Net::Kubernetes::Resource::ReplicaSet;
 with 'Net::Kubernetes::Role::ResourceCatalog';
 
 sub create_resource_object {
-	my($self, $object, $kind) = @_;
-	$kind ||= $object->{kind};
-	$object->{kind} ||= $kind;
-	my(%create_args) = %$object;
-	$create_args{api_version} = $object->{apiVersion};
-	$create_args{server_version} = $self->server_version;
-	
-	unless ($self->is_global_resource($kind)) {
-		$create_args{namespace} = $object->{namespace} || $self->namespace;
-	}
+    my ($self, $object, $kind) = @_;
+    $kind ||= $object->{kind};
+    $object->{kind} ||= $kind;
+    my (%create_args) = %$object;
+    $create_args{api_version}    = $object->{apiVersion};
+    $create_args{server_version} = $self->server_version;
 
-	$create_args{username} = $self->username if($self->username);
-	$create_args{password} = $self->password if($self->password);
-	$create_args{url} = $self->url;
-	$create_args{base_path} = $object->{metadata}{selfLink};
-	$create_args{ssl_cert_file} = $self->ssl_cert_file if($self->ssl_cert_file);
-	$create_args{ssl_key_file} = $self->ssl_key_file if($self->ssl_key_file);
-	$create_args{ssl_ca_file} = $self->ssl_ca_file if($self->ssl_ca_file);
-	my $class = "Net::Kubernetes::Resource::".$kind;
-	return $class->new(%create_args);
+    unless ($self->is_global_resource($kind)) {
+        $create_args{namespace} = $object->{namespace} || $self->namespace;
+    }
+
+    $create_args{username} = $self->username if ($self->username);
+    $create_args{password} = $self->password if ($self->password);
+    $create_args{url}      = $self->url;
+    $create_args{base_path}     = $object->{metadata}{selfLink};
+    $create_args{ssl_cert_file} = $self->ssl_cert_file if ($self->ssl_cert_file);
+    $create_args{ssl_key_file}  = $self->ssl_key_file if ($self->ssl_key_file);
+    $create_args{ssl_ca_file}   = $self->ssl_ca_file if ($self->ssl_ca_file);
+    my $class = "Net::Kubernetes::Resource::" . $kind;
+    return $class->new(%create_args);
 }
-
 
 return 42;

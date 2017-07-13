@@ -1,4 +1,5 @@
 package Net::Kubernetes::Namespace;
+
 # ABSTRACT: Provides access to kubernetes respources within a single namespace.
 
 use Moose;
@@ -6,15 +7,15 @@ use MooseX::Aliases;
 use syntax 'try';
 
 has namespace => (
-	is       => 'ro',
-	isa      => 'Str',
-	required => 1,
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
 );
 
 has _namespace_data => (
-	is       => 'ro',
-	isa      => 'HashRef',
-	required => 0,
+    is       => 'ro',
+    isa      => 'HashRef',
+    required => 0,
 );
 
 with 'Net::Kubernetes::Role::APIAccess';
@@ -24,53 +25,53 @@ with 'Net::Kubernetes::Role::ResourceFactory';
 with 'Net::Kubernetes::Role::ResourceFetcher';
 with 'Net::Kubernetes::Role::SecretBuilder';
 
-=method $ns->get_pod('my-pod-name')
+=head2 $ns->get_pod('my-pod-name')
 
-=method $ns->get_repllcation_controller('my-rc-name') (aliased as $ns->get_rc('my-rc-name'))
+=head2 $ns->get_repllcation_controller('my-rc-name') (aliased as $ns->get_rc('my-rc-name'))
 
-=method $ns->get_service('my-servce-name')
+=head2 $ns->get_service('my-servce-name')
 
-=method $ns->get_secret('my-secret-name')
+=head2 $ns->get_secret('my-secret-name')
 
-=method $ns->get_deployment('my-deployment-name')
+=head2 $ns->get_deployment('my-deployment-name')
 
 =cut
 
 sub get_secret {
-	my ($self, $name) = @_;
-	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'secret');
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'secret');
 }
 
 sub get_pod {
-	my ($self, $name) = @_;
-	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'pod');
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'pod');
 }
 
 sub get_service {
-	my ($self, $name) = @_;
-	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'service');
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'service');
 }
 
 sub get_replication_controller {
-	my ($self, $name) = @_;
-	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'replicationcontroller');
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'replicationcontroller');
 }
 alias get_rc => 'get_replication_controller';
 
 sub get_deployment {
-	my ($self, $name) = @_;
-	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'deployment');
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'deployment');
 }
 
 sub get_replica_set {
-	my($self, $name) = @_;
-	Net::Kubernetes::Exception->throw(message=>"Missing required parameter 'name'") if(! defined $name || ! length $name);
-	return $self->get_resource_by_name($name, 'replicaset');
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'replicaset');
 }
 alias get_rs => 'get_replica_set';
 
