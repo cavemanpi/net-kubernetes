@@ -1,3 +1,13 @@
+# NAME
+
+Net::Kubernetes - An object oriented interface to the REST API's provided by kubernetes
+
+[![Build Status](https://travis-ci.org/cavemanpi/net-kubernetes.png?branch=master)](https://travis-ci.org/cavemanpi/net-kubernetes)
+
+# VERSION
+
+version 1.05
+
 # SYNOPSIS
 
     my $kube = Net::Kubernetes->new(url=>'http://127.0.0.1:8080', username=>'dave', password=>'davespassword');
@@ -100,3 +110,38 @@ returns a list of [Net::Kubernetes::Resource::Node](https://metacpan.org/pod/Net
 ## list\_service\_accounts(\[label=>{label=>value}\], \[fields=>{field=>value}\])
 
 returns a list of [Net::Kubernetes::Resource::Service](https://metacpan.org/pod/Net::Kubernetes::Resource::Service)s
+
+# AUTHOR
+
+Dave Mueller <dave@perljedi.com>
+
+# COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2015 by Liquid Web Inc.
+
+This is free software, licensed under:
+
+    The MIT (X11) License
+
+# SEE ALSO
+
+Please see those modules/websites for more information related to this module.
+
+- [Net::Kubernetes::Namespace](https://metacpan.org/pod/Net::Kubernetes::Namespace)
+- [Net::Kubernetes::Resource](https://metacpan.org/pod/Net::Kubernetes::Resource)
+
+# CONSUMES
+
+- [Net::Kubernetes::Role::APIAccess](https://metacpan.org/pod/Net::Kubernetes::Role::APIAccess)
+- [Net::Kubernetes::Role::ResourceCatalog](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceCatalog)
+- [Net::Kubernetes::Role::ResourceFactory](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFactory)
+- [Net::Kubernetes::Role::ResourceFetcher](https://metacpan.org/pod/Net::Kubernetes::Role::ResourceFetcher)
+
+# CONTRIBUTORS
+
+- Chris Reinhardt <creinhardt@liquidweb.com>
+- Christopher Pruden <cdpruden@liquidweb.com>
+- Dave <dave@perljedi.com>
+- Dave Mueller <dmueller@liquidweb.com>
+- Kevin <kcavemanj@gmail.com>
+- Kevin Johnson <kcavemanj@gmail.com>
