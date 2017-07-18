@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+1.05 Tue Jul 18 2017
   
   - Previous distribution was packaged with files which should not have been there.
 
