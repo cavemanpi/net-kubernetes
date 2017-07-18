@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  
+  - Previous distribution was packaged with files which should not have been there.
 
   - Perltidy'ed the distro
 
