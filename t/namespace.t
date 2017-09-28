@@ -34,6 +34,9 @@ describe "Net::Kubernetes - Namespace" => sub {
     it_should_behave_like "Secret Lister";
     it_should_behave_like "Deployment Lister";
     it_should_behave_like "ReplicaSet Lister";
+    it_should_behave_like "Role Lister";
+    it_should_behave_like "RoleBinding Lister";
+    it_should_behave_like "ServiceAccount Lister";
 
     describe "get_pod" => sub {
         it "throws an exception if not given a pod name" => sub {
@@ -111,6 +114,55 @@ describe "Net::Kubernetes - Namespace" => sub {
             isa_ok($se, 'Net::Kubernetes::Resource::Service');
         };
     };
+
+    describe "get_service_account" => sub {
+        it "throws an exception if not given a name" => sub {
+            dies_ok { $sut->get_service_account(); };
+        };
+        it "returns a Net::Kubernetes::Resource::ServiceAccount object on success" => sub {
+            $lwpMock->addMock('request')->returns(
+                HTTP::Response->new(
+                    200, "ok", undef, '{"secrets": [], "imagePullSecrets":[], "metadata":{"selfLink":"/path/to/me"}, "kind":"ServiceAccount", "apiVersion":"v1beta3"}'
+                )
+            );
+            my $se;
+            lives_ok { $se = $sut->get_service_account('myRc'); };
+            isa_ok($se, 'Net::Kubernetes::Resource::ServiceAccount');
+        };
+    };
+
+    describe "get_role" => sub {
+        it "throws an exception if not given a name" => sub {
+            dies_ok { $sut->get_role(); };
+        };
+        it "returns a Net::Kubernetes::Resource::Role object on success" => sub {
+            $lwpMock->addMock('request')->returns(
+                HTTP::Response->new(
+                    200, "ok", undef, '{"rules":[], "metadata":{"selfLink":"/path/to/me"}, "kind":"Role", "apiVersion":"v1beta3"}'
+                )
+            );
+            my $se;
+            lives_ok { $se = $sut->get_role('myRc'); };
+            isa_ok($se, 'Net::Kubernetes::Resource::Role');
+        };
+    };
+
+    describe "get_role" => sub {
+        it "throws an exception if not given a name" => sub {
+            dies_ok { $sut->get_role(); };
+        };
+        it "returns a Net::Kubernetes::Resource::RoleBinding object on success" => sub {
+            $lwpMock->addMock('request')->returns(
+                HTTP::Response->new(
+                    200, "ok", undef, '{"roleRef":{}, "subjects":[], "metadata":{"selfLink":"/path/to/me"}, "kind":"RoleBinding", "apiVersion":"v1beta3"}'
+                )
+            );
+            my $se;
+            lives_ok { $se = $sut->get_role_binding('myRc'); };
+            isa_ok($se, 'Net::Kubernetes::Resource::RoleBinding');
+        };
+    };
+
     describe "get_secret" => sub {
         it "throws an exception if not given a pod name" => sub {
             dies_ok { $sut->get_secret(); };

@@ -30,7 +30,7 @@ describe "Net::Kubernetes" => sub {
                 ->returns(HTTP::Response->new(200, "ok", undef, '{"status":"ok", "apiVersion":"v1beta3", "metadata":{"selfLink":"/path/to/me"}}'));
 
             foreach my $list_method (
-                qw(list_rc list_pods list_replication_controllers list_services list_events list_secrets list_endpoints list_deployments)) {
+                qw(list_rc list_pods list_replication_controllers list_services list_events list_secrets list_endpoints list_deployments list_service_accounts list_roles list_role_bindings)) {
                 my $expectation = Net::Kubernetes::Namespace->expects($list_method);
                 $sut->$list_method;
                 $expectation->verify();
@@ -87,25 +87,6 @@ describe "Net::Kubernetes" => sub {
             my (@nodes) = $sut->list_nodes();
             is(scalar(@nodes), 1);
             isa_ok($nodes[0], 'Net::Kubernetes::Resource::Node');
-        };
-    };
-    describe "list_service_accounts" => sub {
-        before sub {
-            $config{method} = 'list_service_accounts';
-        };
-        it_should_behave_like "all_list_methods";
-        it "returns a list of Net::Kubernetes::Node objects" => sub {
-            $lwpMock->addMock('request')->returns(
-                HTTP::Response->new(
-                    200,
-                    "ok",
-                    undef,
-'{ "kind": "NodeList", "apiVersion": "v1beta3", "metadata":{ "selfLink": "/api/v1beta3/nodes", "resourceVersion": "60116" }, "items": [ { "metadata": { "name": "name", "selfLink": "/api/v1beta3/nodes/name", "labels": { "kubernetes.io/hostname": "name" } }, "secrets": [{ "externalID": "name" }], "imagePullSecrets":[], "status": { "field": "woot" } }] }'
-                )
-            );
-            my (@nodes) = $sut->list_service_accounts();
-            is(scalar(@nodes), 1);
-            isa_ok($nodes[0], 'Net::Kubernetes::Resource::ServiceAccount');
         };
     };
 };
