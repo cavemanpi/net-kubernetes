@@ -19,21 +19,22 @@ my %endpoint_catalog = (
         endpoint              => 'api/v1',
         deployment            => 'apis/extensions/v1beta1',
         replicaset            => 'apis/extensions/v1beta1',
-    },
-    1.6 => {
-        pod                   => 'api/v1',
-        replicationcontroller => 'api/v1',
-        service               => 'api/v1',
-        event                 => 'api/v1',
-        node                  => 'api/v1',
-        serviceaccount        => 'api/v1',
-        namespace             => 'api/v1',
-        secret                => 'api/v1',
-        endpoint              => 'api/v1',
-        deployment            => 'apis/apps/v1beta1',
-        replicaset            => 'apis/extensions/v1beta1',
-    },
+        role                  => 'apis/rbac.authorization.k8s.io/v1alpha1',
+        rolebinding           => 'apis/rbac.authorization.k8s.io/v1alpha1',
+    }
 );
+
+$endpoint_catalog{'1.6'} = { 
+    %{$endpoint_catalog{'1.5'}},
+    deployment            => 'apis/apps/v1beta1',
+    replicaset            => 'apis/extensions/v1beta1',
+};
+
+$endpoint_catalog{'1.7'} = {
+    %{$endpoint_catalog{'1.6'}},
+    role                  => 'apis/rbac.authorization.k8s.io/v1beta1',
+    rolebinding           => 'apis/rbac.authorization.k8s.io/v1beta1',
+};
 
 my %globals_catalog = (
     node      => 1,

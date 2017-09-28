@@ -121,6 +121,45 @@ sub list_replica_sets {
     return $self->_retrieve_list('ReplicaSet', %options);
 }
 
+=head2 list_roles([label=>{label=>value}], [fields=>{field=>value}])
+
+returns a list of L<Net::Kubernetes::Resource::Role>s
+
+=cut
+
+sub list_roles {
+    my $self = shift;
+    my %options = $self->_norm_options(@_);
+
+    return $self->_retrieve_list('Role', %options);
+}
+
+=head2 list_role_bindings([label=>{label=>value}], [fields=>{field=>value}])
+
+returns a list of L<Net::Kubernetes::Resource::RoleBinding>s
+
+=cut
+
+sub list_role_bindings {
+    my $self = shift;
+    my %options = $self->_norm_options(@_);
+
+    return $self->_retrieve_list('RoleBinding', %options);
+}
+
+=head2 list_service_accounts([label=>{label=>value}], [fields=>{field=>value}])
+
+returns a list of L<Net::Kubernetes::Resource::ServiceAccount>s
+
+=cut
+
+sub list_service_accounts {
+    my $self = shift;
+    my %options = $self->_norm_options(@_);
+
+    return $self->_retrieve_list('ServiceAccount', %options);
+}
+
 sub _retrieve_list {
     my $self          = shift;
     my $resource_kind = shift;

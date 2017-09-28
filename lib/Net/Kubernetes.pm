@@ -129,9 +129,11 @@ has 'default_namespace' => (
         qw(
             build_secret create create_from_file get_deployment get_pod
             get_rc get_replica_set get_replication_controller get_rs
-            get_secret get_service list_deployments list_endpoints
+            get_secret get_service get_role get_role_binding get_service_account
+            list_deployments list_endpoints
             list_events list_pods list_rc list_replica_sets
             list_replication_controllers list_rs list_secrets list_services
+            list_roles list_role_bindings list_service_accounts
             )
     ],
     builder => '_get_default_namespace',
@@ -270,46 +272,6 @@ sub get_node {
     my ($self, $name) = @_;
     Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
     return $self->get_resource_by_name($name, 'node');
-}
-
-=head2 list_service_accounts([label=>{label=>value}], [fields=>{field=>value}])
-
-returns a list of L<Net::Kubernetes::Resource::Service>s
-
-=cut
-
-sub list_service_accounts {
-    my $self = shift;
-    my (%options);
-    if (ref($_[0])) {
-        %options = %{$_[0]};
-    }
-    else {
-        %options = @_;
-    }
-
-    my $uri = URI->new($self->path . '/serviceaccounts');
-    my (%form) = ();
-    $form{labelSelector} = $self->build_selector_from_hash($options{labels}) if (exists $options{labels});
-    $form{fieldSelector} = $self->build_selector_from_hash($options{fields}) if (exists $options{fields});
-    $uri->query_form(%form);
-
-    my $res = $self->ua->request($self->create_request(GET => $uri));
-    if ($res->is_success) {
-        my $sa_list = $self->json->decode($res->content);
-        my (@saccs) = ();
-        foreach my $sacc (@{$sa_list->{items}}) {
-            $sacc->{apiVersion} = $sa_list->{apiVersion};
-            push @saccs, $self->create_resource_object($sacc, 'ServiceAccount');
-        }
-        return wantarray ? @saccs : \@saccs;
-    }
-    else {
-        Net::Kubernetes::Exception->throw(
-            code    => $res->code,
-            message => $res->message
-        );
-    }
 }
 
 sub _get_default_namespace {

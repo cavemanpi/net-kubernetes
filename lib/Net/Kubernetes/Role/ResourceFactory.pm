@@ -14,6 +14,8 @@ require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::ServiceAccount;
 require Net::Kubernetes::Resource::Deployment;
 require Net::Kubernetes::Resource::ReplicaSet;
+require Net::Kubernetes::Resource::Role;
+require Net::Kubernetes::Resource::RoleBinding;
 
 with 'Net::Kubernetes::Role::ResourceCatalog';
 
