@@ -20,7 +20,7 @@ augment as_hashref => sub {
     my $self = shift;
     return (
         roleRef  => $self->roleRef,
-	subjects => $self->subjects,
+        subjects => $self->subjects,
     );
 };
 
