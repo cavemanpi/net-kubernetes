@@ -75,4 +75,13 @@ sub get_replica_set {
 }
 alias get_rs => 'get_replica_set';
 
+sub delete {
+    my ($self) = @_;
+    my ($res) = $self->ua->request($self->create_request(DELETE => $self->path));
+    if ($res->is_success) {
+        return 1;
+    }
+    return 0;
+}
+
 return 42;
