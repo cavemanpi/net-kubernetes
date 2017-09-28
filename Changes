@@ -2,6 +2,12 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+  - Adds create and delete verbs for namespaces.
+
+  - Fixes serevice accounts to be namespaced resources instead of globals.
+
+  - Adds support for role and role binding resources.
+
 1.05 Tue Jul 18 2017
   
   - Previous distribution was packaged with files which should not have been there.
