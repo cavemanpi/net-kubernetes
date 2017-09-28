@@ -14,6 +14,7 @@ my %endpoint_catalog = (
         event                 => 'api/v1',
         node                  => 'api/v1',
         serviceaccount        => 'api/v1',
+        namespace             => 'api/v1',
         secret                => 'api/v1',
         endpoint              => 'api/v1',
         deployment            => 'apis/extensions/v1beta1',
@@ -26,6 +27,7 @@ my %endpoint_catalog = (
         event                 => 'api/v1',
         node                  => 'api/v1',
         serviceaccount        => 'api/v1',
+        namespace             => 'api/v1',
         secret                => 'api/v1',
         endpoint              => 'api/v1',
         deployment            => 'apis/apps/v1beta1',
@@ -34,8 +36,8 @@ my %endpoint_catalog = (
 );
 
 my %globals_catalog = (
-    node           => 1,
-    serviceaccount => 1,
+    node      => 1,
+    namespace => 1,
 );
 
 =head2 resource_path($resource_name)

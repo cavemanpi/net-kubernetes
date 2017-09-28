@@ -52,6 +52,7 @@ require Net::Kubernetes::Exception;
 
 with 'Net::Kubernetes::Role::APIAccess';
 with 'Net::Kubernetes::Role::ResourceFetcher';
+with 'Net::Kubernetes::Role::ResourceCatalog';
 
 =head2 new - Create a new $kube object
 
@@ -172,6 +173,57 @@ sub get_namespace {
             message => "Error getting namespace $namespace:\n" . $res->message
         );
     }
+}
+
+sub create_namespace {
+    my ($self, $namespace) = @_;
+
+    if (!defined $namespace || !length $namespace) {
+        Throwable::Error->throw(message => '$namespace cannot be null');
+    }
+
+    my $namespace_path = $self->get_resource_path('namespace');
+    my $res = $self->ua->request($self->create_request(
+        POST => $namespace_path, 
+        undef, $self->json->encode({ 
+            metadata => {
+                name => $namespace
+            }
+        })
+    ));
+
+    if ($res->is_success) {
+        my $ns = $self->json->decode($res->content);
+
+        # Somewhere between Kubernetes 1.2 and 1.5, the self link for namespaces broke. So for now, we can't trust them.
+        # to populate the base_path. A bug report indicates that this bug is fixed in 1.7.
+        # https://github.com/kubernetes/kubernetes/issues/48321
+        $namespace_path .= "/$namespace";
+	
+        my (%create_args) = (
+            url             => $self->url,
+            base_path       => $namespace_path,
+            server_version  => $self->server_version,
+            api_version     => $self->api_version,
+            namespace       => $namespace,
+            _namespace_data => $ns
+        );
+        $create_args{username}      = $self->username      if (defined $self->username);
+        $create_args{password}      = $self->password      if (defined $self->password);
+        $create_args{token}         = $self->token         if (defined $self->token);
+        $create_args{ssl_cert_file} = $self->ssl_cert_file if (defined $self->ssl_cert_file);
+        $create_args{ssl_key_file}  = $self->ssl_key_file  if (defined $self->ssl_key_file);
+        $create_args{ssl_ca_file}   = $self->ssl_ca_file   if (defined $self->ssl_ca_file);
+        $create_args{ssl_verify}    = $self->ssl_verify;
+        return Net::Kubernetes::Namespace->new(%create_args);
+    }
+    else {
+        Net::Kubernetes::Exception->throw(
+            code    => $res->code,
+            message => "Error creating namespace $namespace:\n" . $res->message
+        );
+    }
+
 }
 
 =head2 list_nodes([label=>{label=>value}], [fields=>{field=>value}])
