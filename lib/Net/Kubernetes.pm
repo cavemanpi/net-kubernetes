@@ -52,6 +52,7 @@ require Net::Kubernetes::Exception;
 
 with 'Net::Kubernetes::Role::APIAccess';
 with 'Net::Kubernetes::Role::ResourceFetcher';
+with 'Net::Kubernetes::Role::ResourceCatalog';
 
 =head2 new - Create a new $kube object
 
@@ -128,9 +129,11 @@ has 'default_namespace' => (
         qw(
             build_secret create create_from_file get_deployment get_pod
             get_rc get_replica_set get_replication_controller get_rs
-            get_secret get_service list_deployments list_endpoints
+            get_secret get_service get_role get_role_binding get_service_account
+            list_deployments list_endpoints
             list_events list_pods list_rc list_replica_sets
             list_replication_controllers list_rs list_secrets list_services
+            list_roles list_role_bindings list_service_accounts
             )
     ],
     builder => '_get_default_namespace',
@@ -159,9 +162,11 @@ sub get_namespace {
         );
         $create_args{username}      = $self->username      if (defined $self->username);
         $create_args{password}      = $self->password      if (defined $self->password);
+        $create_args{token}         = $self->token         if (defined $self->token);
         $create_args{ssl_cert_file} = $self->ssl_cert_file if (defined $self->ssl_cert_file);
         $create_args{ssl_key_file}  = $self->ssl_key_file  if (defined $self->ssl_key_file);
         $create_args{ssl_ca_file}   = $self->ssl_ca_file   if (defined $self->ssl_ca_file);
+        $create_args{ssl_verify}    = $self->ssl_verify;
         return Net::Kubernetes::Namespace->new(%create_args);
     }
     else {
@@ -170,6 +175,58 @@ sub get_namespace {
             message => "Error getting namespace $namespace:\n" . $res->message
         );
     }
+}
+
+sub create_namespace {
+    my ($self, $namespace) = @_;
+
+    if (!defined $namespace || !length $namespace) {
+        Throwable::Error->throw(message => '$namespace cannot be null');
+    }
+
+    my $namespace_path = $self->get_resource_path('namespace');
+    my $res = $self->ua->request($self->create_request(
+        POST => $namespace_path, 
+        undef, 
+        $self->json->encode({ 
+            metadata => {
+                name => $namespace
+            }
+        }),
+    ));
+
+    if ($res->is_success) {
+        my $ns = $self->json->decode($res->content);
+
+        # Somewhere between Kubernetes 1.2 and 1.5, the self link for namespaces broke. So for now, we can't trust them.
+        # to populate the base_path. A bug report indicates that this bug is fixed in 1.7.
+        # https://github.com/kubernetes/kubernetes/issues/48321
+        $namespace_path .= "/$namespace";
+	
+        my (%create_args) = (
+            url             => $self->url,
+            base_path       => $namespace_path,
+            server_version  => $self->server_version,
+            api_version     => $self->api_version,
+            namespace       => $namespace,
+            _namespace_data => $ns
+        );
+        $create_args{username}      = $self->username      if (defined $self->username);
+        $create_args{password}      = $self->password      if (defined $self->password);
+        $create_args{token}         = $self->token         if (defined $self->token);
+        $create_args{ssl_cert_file} = $self->ssl_cert_file if (defined $self->ssl_cert_file);
+        $create_args{ssl_key_file}  = $self->ssl_key_file  if (defined $self->ssl_key_file);
+        $create_args{ssl_ca_file}   = $self->ssl_ca_file   if (defined $self->ssl_ca_file);
+        $create_args{ssl_verify}    = $self->ssl_verify;
+        return Net::Kubernetes::Namespace->new(%create_args);
+    }
+    else {
+        Net::Kubernetes::Exception->throw(
+            code    => $res->code,
+            message => "Error creating namespace $namespace:\n" . $res->message
+        );
+    }
+
 }
 
 =head2 list_nodes([label=>{label=>value}], [fields=>{field=>value}])
@@ -216,46 +273,6 @@ sub get_node {
     my ($self, $name) = @_;
     Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
     return $self->get_resource_by_name($name, 'node');
-}
-
-=head2 list_service_accounts([label=>{label=>value}], [fields=>{field=>value}])
-
-returns a list of L<Net::Kubernetes::Resource::Service>s
-
-=cut
-
-sub list_service_accounts {
-    my $self = shift;
-    my (%options);
-    if (ref($_[0])) {
-        %options = %{$_[0]};
-    }
-    else {
-        %options = @_;
-    }
-
-    my $uri = URI->new($self->path . '/serviceaccounts');
-    my (%form) = ();
-    $form{labelSelector} = $self->build_selector_from_hash($options{labels}) if (exists $options{labels});
-    $form{fieldSelector} = $self->build_selector_from_hash($options{fields}) if (exists $options{fields});
-    $uri->query_form(%form);
-
-    my $res = $self->ua->request($self->create_request(GET => $uri));
-    if ($res->is_success) {
-        my $sa_list = $self->json->decode($res->content);
-        my (@saccs) = ();
-        foreach my $sacc (@{$sa_list->{items}}) {
-            $sacc->{apiVersion} = $sa_list->{apiVersion};
-            push @saccs, $self->create_resource_object($sacc, 'ServiceAccount');
-        }
-        return wantarray ? @saccs : \@saccs;
-    }
-    else {
-        Net::Kubernetes::Exception->throw(
-            code    => $res->code,
-            message => $res->message
-        );
-    }
 }
 
 sub _get_default_namespace {

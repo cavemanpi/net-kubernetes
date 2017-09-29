@@ -75,4 +75,31 @@ sub get_replica_set {
 }
 alias get_rs => 'get_replica_set';
 
+sub get_role {
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'role');
+}
+
+sub get_role_binding {
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'rolebinding');
+}
+
+sub get_service_account{
+    my ($self, $name) = @_;
+    Net::Kubernetes::Exception->throw(message => "Missing required parameter 'name'") if (!defined $name || !length $name);
+    return $self->get_resource_by_name($name, 'serviceaccount');
+}
+
+sub delete {
+    my ($self) = @_;
+    my ($res) = $self->ua->request($self->create_request(DELETE => $self->path));
+    if ($res->is_success) {
+        return 1;
+    }
+    return 0;
+}
+
 return 42;

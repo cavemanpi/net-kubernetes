@@ -107,10 +107,6 @@ Delegates automatically to [Net::Kubernetes::Namespace](https://metacpan.org/pod
 
 returns a list of [Net::Kubernetes::Resource::Node](https://metacpan.org/pod/Net::Kubernetes::Resource::Node)s
 
-## list\_service\_accounts(\[label=>{label=>value}\], \[fields=>{field=>value}\])
-
-returns a list of [Net::Kubernetes::Resource::Service](https://metacpan.org/pod/Net::Kubernetes::Resource::Service)s
-
 # AUTHOR
 
 Dave Mueller <dave@perljedi.com>

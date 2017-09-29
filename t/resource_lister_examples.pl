@@ -145,6 +145,60 @@ shared_examples_for "Service Lister" => sub {
     };
 };
 
+shared_examples_for "ServiceAccount Lister" => sub {
+    before sub {
+        $config{method} = 'list_service_accounts';
+    };
+    it_should_behave_like "all_list_methods";
+    it "returns an array of Services" => sub {
+        $lwpMock->addMock('request')->returns(
+            HTTP::Response->new(
+                200, "ok", undef,
+                '{"status":"ok", "apiVersion":"v1beta3", "items":[{ "secrets": [], "imagePullSecrets":[], "metadata":{"selfLink":"/path/to/me"}}]}'
+            )
+        );
+        my $res = $sut->list_service_accounts;
+        isa_ok($res,      'ARRAY');
+        isa_ok($res->[0], 'Net::Kubernetes::Resource::ServiceAccount');
+    };
+};
+
+shared_examples_for "Role Lister" => sub {
+    before sub {
+        $config{method} = 'list_roles';
+    };
+    it_should_behave_like "all_list_methods";
+    it "returns an array of Services" => sub {
+        $lwpMock->addMock('request')->returns(
+            HTTP::Response->new(
+                200, "ok", undef,
+                '{"status":"ok", "apiVersion":"v1beta3", "items":[{ "rules": [], "imagePullSecretes":[], "metadata":{"selfLink":"/path/to/me"}}]}'
+            )
+        );
+        my $res = $sut->list_roles;
+        isa_ok($res,      'ARRAY');
+        isa_ok($res->[0], 'Net::Kubernetes::Resource::Role');
+    };
+};
+
+shared_examples_for "RoleBinding Lister" => sub {
+    before sub {
+        $config{method} = 'list_role_bindings';
+    };
+    it_should_behave_like "all_list_methods";
+    it "returns an array of Services" => sub {
+        $lwpMock->addMock('request')->returns(
+            HTTP::Response->new(
+                200, "ok", undef,
+                '{"status":"ok", "apiVersion":"v1beta3", "items":[{ "subjects": [], "roleRef": {}, "imagePullSecretes":[], "metadata":{"selfLink":"/path/to/me"}}]}'
+            )
+        );
+        my $res = $sut->list_role_bindings;
+        isa_ok($res,      'ARRAY');
+        isa_ok($res->[0], 'Net::Kubernetes::Resource::RoleBinding');
+    };
+};
+
 shared_examples_for "Secret Lister" => sub {
     before sub {
         $config{method} = 'list_secrets';

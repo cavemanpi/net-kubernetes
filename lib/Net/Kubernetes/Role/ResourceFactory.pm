@@ -14,6 +14,8 @@ require Net::Kubernetes::Resource::Service;
 require Net::Kubernetes::Resource::ServiceAccount;
 require Net::Kubernetes::Resource::Deployment;
 require Net::Kubernetes::Resource::ReplicaSet;
+require Net::Kubernetes::Resource::Role;
+require Net::Kubernetes::Resource::RoleBinding;
 
 with 'Net::Kubernetes::Role::ResourceCatalog';
 
@@ -31,11 +33,13 @@ sub create_resource_object {
 
     $create_args{username} = $self->username if ($self->username);
     $create_args{password} = $self->password if ($self->password);
+    $create_args{token}    = $self->token    if ($self->token);
     $create_args{url}      = $self->url;
     $create_args{base_path}     = $object->{metadata}{selfLink};
     $create_args{ssl_cert_file} = $self->ssl_cert_file if ($self->ssl_cert_file);
     $create_args{ssl_key_file}  = $self->ssl_key_file if ($self->ssl_key_file);
     $create_args{ssl_ca_file}   = $self->ssl_ca_file if ($self->ssl_ca_file);
+    $create_args{ssl_verify}    = $self->ssl_verify;
     my $class = "Net::Kubernetes::Resource::" . $kind;
     return $class->new(%create_args);
 }

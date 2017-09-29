@@ -95,6 +95,7 @@ has 'ssl_ca_file' => (
 has 'ssl_verify' => (
     is       => 'rw',
     isa      => 'Str',
+    default  => 1,
     required => 0,
 );
 
@@ -157,17 +158,23 @@ sub _build_server_version {
 
 sub _build_lwp_agent {
     my $self = shift;
-    my $ua = LWP::UserAgent->new(agent => 'net-kubernetes-perl/0.20');
+
+    my $ua;
+    my %ua_args = (
+        agent    => 'net-kubernetes-perl/1.06',
+        ssl_opts => {
+             verify_hostname => $self->ssl_verify,
+        }
+    );
+
     if ($self->ssl_cert_file) {
-        $ua = LWP::UserAgent->new(
-            ssl_opts => {
-                verify_hostname => $self->ssl_verify,
-                SSL_cert_file   => $self->ssl_cert_file,
-                SSL_key_file    => $self->ssl_key_file,
-                SSL_ca_file     => $self->ssl_ca_file,
-            }
-        );
+        for my $key (qw(SSL_cert_file SSL_key_file SSL_ca_file)) {
+            my $method_name = lc($key);
+            $ua_args{$key} = $self->$method_name;
+        }
     }
+
+    $ua = LWP::UserAgent->new(%ua_args);
     return $ua;
 }
 
