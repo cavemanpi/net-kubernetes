@@ -161,7 +161,7 @@ sub _build_lwp_agent {
 
     my $ua;
     my %ua_args = (
-	agent    => 'net-kubernetes-perl/1.06',
+        agent    => 'net-kubernetes-perl/1.06',
         ssl_opts => {
              verify_hostname => $self->ssl_verify,
         }
