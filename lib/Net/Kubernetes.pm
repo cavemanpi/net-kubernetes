@@ -187,11 +187,12 @@ sub create_namespace {
     my $namespace_path = $self->get_resource_path('namespace');
     my $res = $self->ua->request($self->create_request(
         POST => $namespace_path, 
-        undef, $self->json->encode({ 
+        undef, 
+        $self->json->encode({ 
             metadata => {
                 name => $namespace
             }
-        })
+        }),
     ));
 
     if ($res->is_success) {
