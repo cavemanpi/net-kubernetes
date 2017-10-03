@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.07 Tue Oct 03 2017
+
   - Fixes service accounts so that imagePullSecrets and secrets are RW and are included in updates.
 
 1.06 Fri Sep 29 2017
