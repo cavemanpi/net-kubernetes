@@ -7,13 +7,22 @@ use Moose;
 extends 'Net::Kubernetes::Resource';
 
 has secrets => (
-    is  => 'ro',
-    isa => 'ArrayRef[HashRef]',
+    is  => 'rw',
+    isa => 'ArrayRef',
 );
 
 has imagePullSecrets => (
-    is  => 'ro',
-    isa => 'ArrayRef[HashRef]',
+    is  => 'rw',
+    isa => 'ArrayRef',
 );
+
+augment 'as_hashref' => sub {
+	my $self = shift;
+
+	return (
+		secrets          => $self->secrets,
+		imagePullSecrets => $self->imagePullSecrets,
+	);
+};
 
 return 42;

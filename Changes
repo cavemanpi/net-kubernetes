@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+  - Fixes service accounts so that imagePullSecrets and secrets are RW and are included in updates.
+
 1.06 Fri Sep 29 2017
 
   - Adds create and delete verbs for namespaces.
