@@ -514,8 +514,6 @@ describe "Net::Kubernetes - ServiceAccount Objects " => sub {
             )
         );
         $sut = $ns->get_service_account('myServiceAccount');
-
-	print Dumper($sut);
     };
     before sub {
         $lwpMock->resetCalls;
