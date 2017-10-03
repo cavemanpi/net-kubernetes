@@ -6,7 +6,7 @@ Net::Kubernetes - An object oriented interface to the REST API's provided by kub
 
 # VERSION
 
-version 1.07
+version 1.08
 
 # SYNOPSIS
 
