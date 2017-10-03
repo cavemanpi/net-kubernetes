@@ -170,7 +170,7 @@ sub _build_lwp_agent {
     if ($self->ssl_cert_file) {
         for my $key (qw(SSL_cert_file SSL_key_file SSL_ca_file)) {
             my $method_name = lc($key);
-            $ua_args{$key} = $self->$method_name;
+            $ua_args{ssl_opts}{$key} = $self->$method_name;
         }
     }
 
