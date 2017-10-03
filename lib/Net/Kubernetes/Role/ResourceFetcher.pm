@@ -28,8 +28,8 @@ sub get_resource_by_name {
         catch($e) {
             $message = $res->message;
             } Net::Kubernetes::Exception->throw(
-            code    => $res->code,
-            message => $message
+                code    => $res->code,
+                message => $message
             );
     }
 }

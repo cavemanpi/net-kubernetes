@@ -495,4 +495,43 @@ describe "Net::Kubernetes - Service Objects " => sub {
     };
 };
 
+describe "Net::Kubernetes - ServiceAccount Objects " => sub {
+    before all => sub {
+        $lwpMock = Test::Mock::Wrapper->new('LWP::UserAgent');
+        lives_ok {
+            $ns = Net::Kubernetes::Namespace->new(
+                base_path      => '/api/v1beta3/namespaces/default',
+                server_version => '1.5',
+                namespace      => 'default',
+            );
+        };
+        $lwpMock->addMock('request')->returns(
+            HTTP::Response->new(
+                200,
+                "ok",
+                undef,
+'{"metadata":{"selfLink":"/api/v1beta3/namespaces/default/serviceaccounts/myRc"}, "kind":"ServiceAccount", "secrets": ["lul"], "imagePullSecrets": ["fun"], "apiVersion":"v1beta3"}'
+            )
+        );
+        $sut = $ns->get_service_account('myServiceAccount');
+    };
+    before sub {
+        $lwpMock->resetCalls;
+    };
+
+    it_should_behave_like "All Resources";
+
+    it "has the correct kind" => sub {
+        is($sut->kind, 'ServiceAccount');
+    };
+
+    it "has secrets in as_hashref" => sub {
+	cmp_deeply($sut->as_hashref->{secrets}, ['lul']);
+    };
+
+    it "has imagePullSecrets in as_hashref" => sub {
+	cmp_deeply($sut->as_hashref->{imagePullSecrets}, ['fun']);
+    };
+};
+
 runtests;
